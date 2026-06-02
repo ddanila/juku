@@ -23,6 +23,11 @@ spring_rod_base_xy_chamfer = 1;
 contact_pusher_diameter = 2.5;
 contact_pusher_edge_spacing = 5;
 contact_pusher_wall_overlap = 0.05;
+latch_width = 7.5;
+latch_thickness = 1;
+latch_length = 2;
+latch_tooth_depth = 0.5;
+latch_tooth_height = 0.5;
 
 inner_width = outside_width - 2 * wall_thickness;
 inner_depth = outside_depth - 2 * wall_thickness;
@@ -139,9 +144,31 @@ module contact_pusher_shape(radius, wall_projection, z_height) {
         }
 }
 
+module latch(side) {
+    x = side * (outside_width / 2 - latch_thickness / 2);
+
+    translate([x, 0, -latch_length / 2])
+        cube([latch_thickness, latch_width, latch_length], center = true);
+
+    translate([x - side * latch_thickness / 2, 0, -latch_length + latch_tooth_height])
+        rotate([90, 0, 0])
+            linear_extrude(height = latch_width, center = true)
+                polygon([
+                    [0, 0],
+                    [-side * latch_tooth_depth, latch_tooth_height / 2],
+                    [0, latch_tooth_height]
+                ]);
+}
+
+module latches() {
+    latch(1);
+    latch(-1);
+}
+
 union() {
     keycap_shell();
     spring_rod_base();
     spring_rod();
     contact_pushers();
+    latches();
 }
