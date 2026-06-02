@@ -33,3 +33,11 @@ After each modeling change:
    ```
 
 Codex can run the automated render check reliably. It can also attempt to launch the OpenSCAD UI, but Snap/desktop session handling may make that window flash briefly or disappear, so manual review is best started from the user's desktop session.
+
+## Modeling notes
+
+Large spheres used for shallow cuts need a high local segment count. A large-radius sphere with the global `$fn = 48` can technically intersect the model but look flat in OpenSCAD because the visible patch is a low-resolution facet. Use a local `$fn`, for example:
+
+```scad
+sphere(r = top_dish_radius, $fn = top_dish_segments);
+```

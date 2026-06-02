@@ -8,6 +8,10 @@ top_chamfer = 3;
 wall_thickness = 1;
 top_thickness = 3;
 chamfer_steps = 18;
+top_dish_radius = 200;
+top_dish_depth = 1;
+top_dish_z_offset = 0.5;
+top_dish_segments = 256;
 spring_rod_diameter = 2.25;
 spring_rod_length = 2;
 spring_rod_end_chamfer = 0.5;
@@ -63,6 +67,9 @@ module keycap_shell() {
                 ],
                 center = true
             );
+
+        translate([0, 0, height + top_dish_radius - top_dish_depth + top_dish_z_offset])
+            sphere(r = top_dish_radius, $fn = top_dish_segments);
     }
 }
 
