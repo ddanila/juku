@@ -8,6 +8,9 @@ top_chamfer = 3;
 wall_thickness = 1;
 top_thickness = 3;
 chamfer_steps = 18;
+spring_rod_diameter = 2.25;
+spring_rod_length = 2;
+spring_rod_end_chamfer = 0.5;
 
 inner_width = outside_width - 2 * wall_thickness;
 inner_depth = outside_depth - 2 * wall_thickness;
@@ -59,4 +62,20 @@ module keycap_shell() {
     }
 }
 
-keycap_shell();
+module spring_rod() {
+    radius = spring_rod_diameter / 2;
+    tip_radius = radius - spring_rod_end_chamfer;
+    rod_top_z = height - top_thickness;
+    straight_length = rod_top_z + spring_rod_length - spring_rod_end_chamfer;
+
+    translate([0, 0, -spring_rod_length + spring_rod_end_chamfer])
+        cylinder(h = straight_length, r = radius);
+
+    translate([0, 0, -spring_rod_length])
+        cylinder(h = spring_rod_end_chamfer, r1 = tip_radius, r2 = radius);
+}
+
+union() {
+    keycap_shell();
+    spring_rod();
+}
