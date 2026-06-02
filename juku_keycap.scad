@@ -11,6 +11,10 @@ chamfer_steps = 18;
 spring_rod_diameter = 2.25;
 spring_rod_length = 2;
 spring_rod_end_chamfer = 0.5;
+spring_rod_base_width = 2.25;
+spring_rod_base_depth = 8;
+spring_rod_base_height = 2;
+spring_rod_base_xy_chamfer = 1;
 
 inner_width = outside_width - 2 * wall_thickness;
 inner_depth = outside_depth - 2 * wall_thickness;
@@ -75,7 +79,24 @@ module spring_rod() {
         cylinder(h = spring_rod_end_chamfer, r1 = tip_radius, r2 = radius);
 }
 
+module rounded_xy_box(width, depth, z_height, xy_radius) {
+    linear_extrude(height = z_height)
+        offset(r = xy_radius)
+            square([width - 2 * xy_radius, depth - 2 * xy_radius], center = true);
+}
+
+module spring_rod_base() {
+    translate([0, 0, height - top_thickness - spring_rod_base_height])
+        rounded_xy_box(
+            spring_rod_base_width,
+            spring_rod_base_depth,
+            spring_rod_base_height,
+            spring_rod_base_xy_chamfer
+        );
+}
+
 union() {
     keycap_shell();
+    spring_rod_base();
     spring_rod();
 }
