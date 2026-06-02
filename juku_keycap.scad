@@ -29,6 +29,7 @@ latch_length = 2;
 latch_tooth_depth = 0.6;
 latch_tooth_height = 1.2;
 latch_tooth_z_offset = 1.2;
+latch_side_round = 0.6;
 
 inner_width = outside_width - 2 * wall_thickness;
 inner_depth = outside_depth - 2 * wall_thickness;
@@ -147,22 +148,73 @@ module contact_pusher_shape(radius, wall_projection, z_height) {
 
 module latch(side) {
     x = side * (outside_width / 2 - latch_thickness / 2);
+    tooth_z = -latch_length + latch_tooth_height - latch_tooth_z_offset;
 
     translate([x, 0, -latch_length / 2])
-        cube([latch_thickness, latch_width, latch_length], center = true);
+        rounded_latch_plate(latch_width, latch_length, latch_thickness, latch_side_round);
 
-    translate([
-        x - side * latch_thickness / 2,
-        0,
-        -latch_length + latch_tooth_height - latch_tooth_z_offset
+    intersection() {
+        translate([
+            x - side * latch_thickness / 2,
+            0,
+            tooth_z
+        ])
+            rotate([90, 0, 0])
+                linear_extrude(height = latch_width, center = true)
+                    polygon([
+                        [0, 0],
+                        [-side * latch_tooth_depth, latch_tooth_height / 2],
+                        [0, latch_tooth_height]
+                    ]);
+
+        translate([0, 0, tooth_z + latch_tooth_height / 2])
+            rounded_yz_prism(
+                latch_width,
+                latch_tooth_height,
+                outside_width + 2 * latch_tooth_depth,
+                latch_side_round
+            );
+    }
+}
+
+module rounded_latch_plate(width, length, thickness, radius) {
+    rounded_yz_prism(width, length, thickness, radius);
+}
+
+module rounded_yz_prism(width, length, thickness, radius) {
+    multmatrix([
+        [0, 0, 1, 0],
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 0, 1]
     ])
-        rotate([90, 0, 0])
-            linear_extrude(height = latch_width, center = true)
-                polygon([
-                    [0, 0],
-                    [-side * latch_tooth_depth, latch_tooth_height / 2],
-                    [0, latch_tooth_height]
-                ]);
+        linear_extrude(height = thickness, center = true)
+            rounded_latch_yz_profile(width, length, radius);
+}
+
+function arc_points(cx, cy, radius, start_angle, end_angle, steps) = [
+    for (i = [0 : steps])
+        [
+            cx + radius * cos(start_angle + (end_angle - start_angle) * i / steps),
+            cy + radius * sin(start_angle + (end_angle - start_angle) * i / steps)
+        ]
+];
+
+module rounded_latch_yz_profile(width, length, radius) {
+    r = min(radius, min(width, length) / 2);
+
+    polygon(concat(
+        [
+            [-width / 2,  length / 2],
+            [ width / 2,  length / 2],
+            [ width / 2, -length / 2 + r]
+        ],
+        arc_points(width / 2 - r, -length / 2 + r, r, 0, -90, 8),
+        [
+            [-width / 2 + r, -length / 2]
+        ],
+        arc_points(-width / 2 + r, -length / 2 + r, r, -90, -180, 8)
+    ));
 }
 
 module latches() {
