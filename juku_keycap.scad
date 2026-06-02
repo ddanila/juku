@@ -116,12 +116,27 @@ module contact_pushers() {
     radius = contact_pusher_diameter / 2;
     center_spacing = contact_pusher_diameter + contact_pusher_edge_spacing;
     y = inner_depth / 2 - radius + contact_pusher_wall_overlap;
+    wall_projection = inner_depth / 2 - y + contact_pusher_wall_overlap;
     rod_height = height - top_thickness;
 
     for (x = [-center_spacing / 2, center_spacing / 2]) {
         translate([x, y, 0])
-            cylinder(h = rod_height, r = radius);
+            contact_pusher_shape(radius, wall_projection, rod_height);
     }
+}
+
+module contact_pusher_shape(radius, wall_projection, z_height) {
+    linear_extrude(height = z_height)
+        union() {
+            intersection() {
+                circle(r = radius);
+                translate([0, -radius / 2])
+                    square([2 * radius, radius], center = true);
+            }
+
+            translate([0, wall_projection / 2])
+                square([2 * radius, wall_projection], center = true);
+        }
 }
 
 union() {
