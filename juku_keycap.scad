@@ -26,8 +26,9 @@ contact_pusher_wall_overlap = 0.05;
 latch_width = 7.5;
 latch_thickness = 1;
 latch_length = 2;
-latch_tooth_depth = 0.5;
-latch_tooth_height = 0.5;
+latch_tooth_depth = 0.6;
+latch_tooth_height = 1.2;
+latch_tooth_z_offset = 1.2;
 
 inner_width = outside_width - 2 * wall_thickness;
 inner_depth = outside_depth - 2 * wall_thickness;
@@ -150,7 +151,11 @@ module latch(side) {
     translate([x, 0, -latch_length / 2])
         cube([latch_thickness, latch_width, latch_length], center = true);
 
-    translate([x - side * latch_thickness / 2, 0, -latch_length + latch_tooth_height])
+    translate([
+        x - side * latch_thickness / 2,
+        0,
+        -latch_length + latch_tooth_height - latch_tooth_z_offset
+    ])
         rotate([90, 0, 0])
             linear_extrude(height = latch_width, center = true)
                 polygon([
