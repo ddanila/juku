@@ -20,6 +20,9 @@ spring_rod_base_width = 2.25;
 spring_rod_base_depth = 8;
 spring_rod_base_height = 2;
 spring_rod_base_xy_chamfer = 1;
+contact_pusher_diameter = 2.5;
+contact_pusher_edge_spacing = 5;
+contact_pusher_wall_overlap = 0.05;
 
 inner_width = outside_width - 2 * wall_thickness;
 inner_depth = outside_depth - 2 * wall_thickness;
@@ -109,8 +112,21 @@ module spring_rod_base() {
         );
 }
 
+module contact_pushers() {
+    radius = contact_pusher_diameter / 2;
+    center_spacing = contact_pusher_diameter + contact_pusher_edge_spacing;
+    y = inner_depth / 2 - radius + contact_pusher_wall_overlap;
+    rod_height = height - top_thickness;
+
+    for (x = [-center_spacing / 2, center_spacing / 2]) {
+        translate([x, y, 0])
+            cylinder(h = rod_height, r = radius);
+    }
+}
+
 union() {
     keycap_shell();
     spring_rod_base();
     spring_rod();
+    contact_pushers();
 }
