@@ -8,11 +8,11 @@ top_chamfer_z = 4;
 top_chamfer_xy = 3;
 wall_thickness = 1;
 top_thickness = 3;
-chamfer_steps = 18;
+chamfer_steps = 128;
 top_dish_radius = 100;
 top_dish_depth = 1;
 top_dish_z_offset = 0.5;
-top_dish_segments = 256;
+top_dish_segments = 1024;
 spring_rod_diameter = 2.25;
 spring_rod_length = 2;
 spring_rod_end_chamfer = 0.5;
@@ -30,11 +30,12 @@ latch_tooth_depth = 0.6;
 latch_tooth_height = 1.2;
 latch_tooth_z_offset = 1.2;
 latch_side_round = 0.6;
+latch_round_segments = 32;
 
 inner_width = outside_width - 2 * wall_thickness;
 inner_depth = outside_depth - 2 * wall_thickness;
 
-$fn = 48;
+$fn = 128;
 
 function rounded_chamfer_inset(z, z_height, xy_inset) =
     xy_inset * (1 - sqrt(1 - (z / z_height) * (z / z_height)));
@@ -209,11 +210,11 @@ module rounded_latch_yz_profile(width, length, radius) {
             [ width / 2,  length / 2],
             [ width / 2, -length / 2 + r]
         ],
-        arc_points(width / 2 - r, -length / 2 + r, r, 0, -90, 8),
+        arc_points(width / 2 - r, -length / 2 + r, r, 0, -90, latch_round_segments),
         [
             [-width / 2 + r, -length / 2]
         ],
-        arc_points(-width / 2 + r, -length / 2 + r, r, -90, -180, 8)
+        arc_points(-width / 2 + r, -length / 2 + r, r, -90, -180, latch_round_segments)
     ));
 }
 
