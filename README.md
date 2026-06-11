@@ -7,6 +7,11 @@ that clip into the switch housing.
 The model lives in `juku_keycap.scad`; everything else (STL, images) is
 generated from it. Technical details are in [NOTES.md](NOTES.md).
 
+> [!NOTE]
+> This project is an experiment: can an LLM fully create a 3D model of
+> medium complexity? Turns out it can. All the code was written by an LLM
+> (mostly GPT-5.5 via Codex) with no manual edits.
+
 |  | Top | Bottom |
 | --- | --- | --- |
 | Render | ![Top render](preview_top.png) | ![Bottom render](preview_bottom.png) |
