@@ -14,6 +14,21 @@ If a plain `openscad` command is useful, add this alias to `~/.bashrc`:
 alias openscad=openscad-nightly
 ```
 
+On macOS the binary is inside the app bundle: `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD`.
+
+## Generated artifacts
+
+`juku_keycap.scad` is the only source file. Everything else is generated from it and must not be edited by hand:
+
+| File | Regenerate with |
+| --- | --- |
+| `juku_keycap.stl` | `openscad -o juku_keycap.stl --export-format binstl juku_keycap.scad` |
+| `preview_top.png`, `preview_bottom.png` | `./scripts/render-previews.sh` |
+
+The preview script renders at 8x the target size and downscales to 1600x1200, because OpenSCAD's CLI renders without antialiasing. It uses the `JukuUniform` color scheme (`scripts/juku-uniform.json`, installed into OpenSCAD's user scheme directory automatically) so that subtraction-cut surfaces don't get the distinct "back face" color.
+
+`3d_printed_top.jpeg` and `3d_printed_bottom.jpeg` are photos of a real print on a resin (photopolymer) printer, with metadata stripped.
+
 ## Iteration workflow
 
 After each modeling change:
