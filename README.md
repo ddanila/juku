@@ -28,7 +28,7 @@ latches that clip into the switch housing.
 
 ```bash
 # STL (use `openscad-nightly` on Linux, see NOTES.md)
-openscad -o juku_keycap.stl juku_keycap.scad
+openscad -o juku_keycap.stl --export-format binstl juku_keycap.scad
 
 # Preview images
 ./scripts/render-previews.sh
