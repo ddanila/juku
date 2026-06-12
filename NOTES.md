@@ -67,6 +67,9 @@ All dimensions are in millimeters.
 | Outer depth (Y) | 290 |
 | Outer height (Z) | 18 |
 | Case thickness | 3 |
+| Front and side bottom chamfer | 8 at 45 degrees |
 
-The first model is an open-top rectangular shell with uniform 3 mm side
-walls and a 3 mm floor. Its lower outer corner is at the origin.
+The case is an open-top shell with 3 mm walls and floor. The front and both
+sides have an 8 mm external bottom chamfer; the rear remains square. The
+inner chamfer is offset to keep the sloped material 3 mm thick. The maximum
+outer envelope starts at the origin.
