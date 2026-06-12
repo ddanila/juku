@@ -6,6 +6,7 @@ outside_depth = 290;
 outside_height = 18;
 case_thickness = 3;
 bottom_chamfer = 8;
+top_edge_chamfer = 3;
 
 cut_overlap = 0.01;
 inner_chamfer_offset = case_thickness * sqrt(2);
@@ -17,6 +18,9 @@ assert(2 * case_thickness < outside_depth);
 assert(case_thickness < outside_height);
 assert(bottom_chamfer > 0);
 assert(inner_chamfer_end_z < outside_height);
+assert(top_edge_chamfer > 0);
+assert(top_edge_chamfer <= case_thickness);
+assert(bottom_chamfer < outside_height - top_edge_chamfer);
 
 module section(width, depth, x, y, z) {
     translate([x, y, z])
@@ -34,7 +38,20 @@ module outside_shape() {
         );
 
         section(outside_width, outside_depth, 0, 0, bottom_chamfer);
-        section(outside_width, outside_depth, 0, 0, outside_height);
+        section(
+            outside_width,
+            outside_depth,
+            0,
+            0,
+            outside_height - top_edge_chamfer
+        );
+        section(
+            outside_width - 2 * top_edge_chamfer,
+            outside_depth - 2 * top_edge_chamfer,
+            top_edge_chamfer,
+            top_edge_chamfer,
+            outside_height
+        );
     }
 }
 

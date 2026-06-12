@@ -68,8 +68,10 @@ All dimensions are in millimeters.
 | Outer height (Z) | 18 |
 | Case thickness | 3 |
 | Front and side bottom chamfer | 8 at 45 degrees |
+| Top rim chamfer | 3 at 45 degrees, downward toward outside |
 
 The case is an open-top shell with 3 mm walls and floor. The front and both
 sides have an 8 mm external bottom chamfer; the rear remains square. The
-inner chamfer is offset to keep the sloped material 3 mm thick. The maximum
-outer envelope starts at the origin.
+inner chamfer is offset to keep the sloped material 3 mm thick. The top rim
+slopes from the inside lip downward and outward across the full wall
+thickness. The maximum outer envelope starts at the origin.
