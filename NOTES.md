@@ -56,3 +56,17 @@ Large spheres used for shallow cuts need a high local segment count. A large-rad
 ```scad
 sphere(r = top_dish_radius, $fn = top_dish_segments);
 ```
+
+## Bottom case dimensions
+
+All dimensions are in millimeters.
+
+| Dimension | Value |
+| --- | ---: |
+| Outer width (X) | 340 |
+| Outer depth (Y) | 290 |
+| Outer height (Z) | 18 |
+| Case thickness | 3 |
+
+The first model is an open-top rectangular shell with uniform 3 mm side
+walls and a 3 mm floor. Its lower outer corner is at the origin.
