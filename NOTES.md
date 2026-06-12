@@ -70,6 +70,9 @@ All dimensions are in millimeters.
 | Front and side bottom chamfer | 8 at 45 degrees |
 | Top rim chamfer | 3 at 45 degrees, downward toward outside |
 | Rear PCB opening | 300 wide x 12 high, centered horizontally and open at top |
+| Rear outer guide rail | 312 long x 4 deep x 15 high |
+| Rear guide channel | 2 deep, with the case floor at its bottom |
+| Rear inner guide rail | 306 long x 3 deep x 15 high |
 
 The case is an open-top shell with 3 mm walls and floor. The front and both
 sides have an 8 mm external bottom chamfer; the rear remains square. The
@@ -78,3 +81,13 @@ slopes from the inside lip downward and outward across the full wall
 thickness. A rectangular PCB opening is centered horizontally in the rear
 wall and extends downward from the top edge. The maximum outer envelope
 starts at the origin.
+
+The experimental PCB guide aligns vertically with the rear opening. Its
+outer face aligns with the exterior rear face. Moving inward, the
+arrangement is a 4 mm rail, a 2 mm channel, and a 3 mm rail. Both rails are
+centered; the outer rail extends 3 mm farther at each end, where square
+mirrored bridges close the channel. The 300 mm opening is cut through the
+rear wall and the complete guide depth from Z=6 to Z=18. The guide extends
+down to the inner floor at Z=3, leaving a continuous 3 mm-high base beneath
+the opening. Its exterior top edge has the same 3 mm, 45-degree chamfer as
+the case rim.

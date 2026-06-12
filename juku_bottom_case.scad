@@ -9,12 +9,28 @@ bottom_chamfer = 8;
 top_edge_chamfer = 3;
 rear_pcb_opening_width = 300;
 rear_pcb_opening_height = 12;
+rear_outer_rail_depth = 4;
+rear_rail_gap = 2;
+rear_inner_rail_depth = 3;
+rear_inner_rail_length = rear_pcb_opening_width + 2 * case_thickness;
+rear_outer_rail_length = rear_inner_rail_length + 2 * case_thickness;
+rear_rail_base_z = case_thickness;
+rear_rail_height = outside_height - rear_rail_base_z;
+rear_rail_end_length = (rear_outer_rail_length - rear_inner_rail_length) / 2;
+rear_guide_y_offset = case_thickness;
 
 cut_overlap = 0.01;
 inner_chamfer_offset = case_thickness * sqrt(2);
 inner_chamfer_end_z = bottom_chamfer + inner_chamfer_offset;
 rear_pcb_opening_x = (outside_width - rear_pcb_opening_width) / 2;
 rear_pcb_opening_z = outside_height - rear_pcb_opening_height;
+rear_inner_rail_x = (outside_width - rear_inner_rail_length) / 2;
+rear_outer_rail_x = (outside_width - rear_outer_rail_length) / 2;
+rear_outer_rail_y =
+    outside_depth - case_thickness - rear_outer_rail_depth
+    + rear_guide_y_offset;
+rear_inner_rail_y =
+    rear_outer_rail_y - rear_rail_gap - rear_inner_rail_depth;
 
 assert(case_thickness > 0);
 assert(2 * case_thickness < outside_width);
@@ -29,6 +45,14 @@ assert(rear_pcb_opening_width > 0);
 assert(rear_pcb_opening_width < outside_width);
 assert(rear_pcb_opening_height > 0);
 assert(rear_pcb_opening_height < outside_height);
+assert(rear_outer_rail_depth > 0);
+assert(rear_rail_gap > 0);
+assert(rear_inner_rail_depth > 0);
+assert(rear_inner_rail_length < outside_width);
+assert(rear_outer_rail_length < outside_width);
+assert(rear_rail_base_z + rear_rail_height <= outside_height);
+assert(rear_rail_base_z < rear_pcb_opening_z);
+assert(rear_rail_end_length > 0);
 
 module section(width, depth, x, y, z) {
     translate([x, y, z])
@@ -96,21 +120,91 @@ module inside_cutout() {
 module rear_pcb_opening() {
     translate([
         rear_pcb_opening_x,
-        outside_depth - case_thickness - cut_overlap,
+        rear_inner_rail_y - cut_overlap,
         rear_pcb_opening_z
     ])
         cube([
             rear_pcb_opening_width,
-            case_thickness + 2 * cut_overlap,
+            outside_depth - rear_inner_rail_y + 2 * cut_overlap,
             rear_pcb_opening_height
         ]);
 }
 
+module rear_pcb_guide_rails() {
+    translate([
+        rear_outer_rail_x,
+        rear_outer_rail_y,
+        rear_rail_base_z
+    ])
+        cube([
+            rear_outer_rail_length,
+            rear_outer_rail_depth,
+            rear_rail_height
+        ]);
+
+    translate([
+        rear_inner_rail_x,
+        rear_inner_rail_y,
+        rear_rail_base_z
+    ])
+        cube([
+            rear_inner_rail_length,
+            rear_inner_rail_depth,
+            rear_rail_height
+        ]);
+
+    for (x = [rear_outer_rail_x, rear_inner_rail_x + rear_inner_rail_length]) {
+        translate([
+            x,
+            rear_inner_rail_y,
+            rear_rail_base_z
+        ])
+            cube([
+                rear_rail_end_length,
+                rear_outer_rail_y + rear_outer_rail_depth - rear_inner_rail_y,
+                rear_rail_height
+            ]);
+    }
+}
+
+module rear_top_edge_chamfer_cut() {
+    translate([-cut_overlap, 0, 0])
+        multmatrix([
+            [0, 0, 1, 0],
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 0, 1]
+        ])
+            linear_extrude(height = outside_width + 2 * cut_overlap)
+                polygon([
+                    [
+                        outside_depth - top_edge_chamfer,
+                        outside_height
+                    ],
+                    [
+                        outside_depth,
+                        outside_height - top_edge_chamfer
+                    ],
+                    [
+                        outside_depth,
+                        outside_height
+                    ]
+                ]);
+}
+
 module bottom_case() {
     difference() {
-        outside_shape();
-        inside_cutout();
+        union() {
+            difference() {
+                outside_shape();
+                inside_cutout();
+            }
+
+            rear_pcb_guide_rails();
+        }
+
         rear_pcb_opening();
+        rear_top_edge_chamfer_cut();
     }
 }
 
