@@ -7,10 +7,14 @@ outside_height = 18;
 case_thickness = 3;
 bottom_chamfer = 8;
 top_edge_chamfer = 3;
+rear_pcb_opening_width = 300;
+rear_pcb_opening_height = 12;
 
 cut_overlap = 0.01;
 inner_chamfer_offset = case_thickness * sqrt(2);
 inner_chamfer_end_z = bottom_chamfer + inner_chamfer_offset;
+rear_pcb_opening_x = (outside_width - rear_pcb_opening_width) / 2;
+rear_pcb_opening_z = outside_height - rear_pcb_opening_height;
 
 assert(case_thickness > 0);
 assert(2 * case_thickness < outside_width);
@@ -21,6 +25,10 @@ assert(inner_chamfer_end_z < outside_height);
 assert(top_edge_chamfer > 0);
 assert(top_edge_chamfer <= case_thickness);
 assert(bottom_chamfer < outside_height - top_edge_chamfer);
+assert(rear_pcb_opening_width > 0);
+assert(rear_pcb_opening_width < outside_width);
+assert(rear_pcb_opening_height > 0);
+assert(rear_pcb_opening_height < outside_height);
 
 module section(width, depth, x, y, z) {
     translate([x, y, z])
@@ -85,10 +93,24 @@ module inside_cutout() {
     }
 }
 
+module rear_pcb_opening() {
+    translate([
+        rear_pcb_opening_x,
+        outside_depth - case_thickness - cut_overlap,
+        rear_pcb_opening_z
+    ])
+        cube([
+            rear_pcb_opening_width,
+            case_thickness + 2 * cut_overlap,
+            rear_pcb_opening_height
+        ]);
+}
+
 module bottom_case() {
     difference() {
         outside_shape();
         inside_cutout();
+        rear_pcb_opening();
     }
 }
 
