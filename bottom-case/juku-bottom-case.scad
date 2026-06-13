@@ -385,18 +385,62 @@ module lid_mount_recess_2d(direction) {
     }
 }
 
+module lid_mount_boss_2d(direction) {
+    projection_length = lid_mount_edge_offset + cut_overlap;
+
+    union() {
+        circle(d = lid_mount_boss_diameter, $fn = lid_mount_segments);
+
+        if (direction[0] < 0)
+            translate([-projection_length / 2, 0])
+                square(
+                    [projection_length, lid_mount_boss_diameter],
+                    center = true
+                );
+        else if (direction[0] > 0)
+            translate([projection_length / 2, 0])
+                square(
+                    [projection_length, lid_mount_boss_diameter],
+                    center = true
+                );
+        else
+            translate([0, -projection_length / 2])
+                square(
+                    [lid_mount_boss_diameter, projection_length],
+                    center = true
+                );
+    }
+}
+
 module lid_mount_bosses() {
     intersection() {
         outside_shape();
 
         union() {
-            lid_mount_positions()
-                translate([0, 0, case_thickness])
-                    cylinder(
-                        h = lid_mount_boss_height,
-                        d = lid_mount_boss_diameter,
-                        $fn = lid_mount_segments
-                    );
+            for (
+                x = [
+                    lid_mount_edge_offset,
+                    outside_width - lid_mount_edge_offset
+                ],
+                y = [
+                    lid_mount_end_offset,
+                    outside_depth - lid_mount_end_offset
+                ]
+            ) {
+                direction = x < outside_width / 2 ? [-1, 0] : [1, 0];
+
+                translate([x, y, case_thickness])
+                    linear_extrude(height = lid_mount_boss_height)
+                        lid_mount_boss_2d(direction);
+            }
+
+            translate([
+                outside_width / 2,
+                lid_mount_edge_offset,
+                case_thickness
+            ])
+                linear_extrude(height = lid_mount_boss_height)
+                    lid_mount_boss_2d([0, -1]);
         }
     }
 }

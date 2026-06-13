@@ -130,5 +130,6 @@ reinforcement boss rising 3 mm from the inner floor.
 
 Five top-lid mounts sit in the front and side bottom-chamfer bands. Four are
 paired near the front and rear ends of the side walls, and one is centered
-on the front wall. Their circular bosses and exterior recesses are clipped
-by the case shell to form D-shaped profiles toward the adjacent wall.
+on the front wall. Their inner bosses and exterior recesses have round inner
+ends with straight projections toward the adjacent wall, forming D-shaped
+profiles.
