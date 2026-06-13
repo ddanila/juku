@@ -16,6 +16,18 @@ leg_counterbore_depth = 1.5;
 leg_boss_diameter = 5.5;
 leg_boss_height = 1.5;
 leg_hole_segments = 128;
+pcb_support_hole_diameter = 3.5;
+pcb_support_boss_diameter = 12;
+pcb_support_boss_height = 3;
+pcb_support_nut_across_flats = 6;
+pcb_support_nut_depth = 3;
+pcb_support_segments = 128;
+pcb_support_outer_x = [25, outside_width - 25];
+pcb_support_rear_x = [25, 128, 231, outside_width - 25];
+pcb_support_front_x = [25, 120, 215, outside_width - 25];
+pcb_support_rear_y = outside_depth - 18;
+pcb_support_middle_y = pcb_support_rear_y - 120;
+pcb_support_front_y = pcb_support_middle_y - 120;
 rear_outer_rail_depth = 4;
 rear_rail_gap = 2;
 rear_inner_rail_depth = 3;
@@ -60,6 +72,14 @@ assert(leg_counterbore_depth < case_thickness);
 assert(leg_boss_diameter >= leg_hole_diameter);
 assert(leg_boss_height > 0);
 assert(leg_hole_segments >= 3);
+assert(pcb_support_hole_diameter > 0);
+assert(pcb_support_boss_diameter > pcb_support_hole_diameter);
+assert(pcb_support_boss_height > 0);
+assert(pcb_support_nut_across_flats > pcb_support_hole_diameter);
+assert(pcb_support_nut_depth > 0);
+assert(pcb_support_nut_depth <= case_thickness);
+assert(pcb_support_segments >= 3);
+assert(pcb_support_front_y > 0);
 assert(rear_outer_rail_depth > 0);
 assert(rear_rail_gap > 0);
 assert(rear_inner_rail_depth > 0);
@@ -254,6 +274,54 @@ module leg_hole_cuts() {
     }
 }
 
+module pcb_support_positions() {
+    for (x = pcb_support_rear_x)
+        translate([x, pcb_support_rear_y, 0])
+            children();
+
+    for (x = pcb_support_outer_x)
+        translate([x, pcb_support_middle_y, 0])
+            children();
+
+    for (x = pcb_support_front_x)
+        translate([x, pcb_support_front_y, 0])
+            children();
+}
+
+module pcb_support_bosses() {
+    pcb_support_positions()
+        translate([0, 0, case_thickness])
+            cylinder(
+                h = pcb_support_boss_height,
+                d = pcb_support_boss_diameter,
+                $fn = pcb_support_segments
+            );
+}
+
+module pcb_support_cuts() {
+    nut_radius = pcb_support_nut_across_flats / sqrt(3);
+
+    pcb_support_positions() {
+        translate([0, 0, -cut_overlap])
+            cylinder(
+                h =
+                    case_thickness
+                    + pcb_support_boss_height
+                    + 2 * cut_overlap,
+                d = pcb_support_hole_diameter,
+                $fn = pcb_support_segments
+            );
+
+        translate([0, 0, -cut_overlap])
+            rotate([0, 0, 30])
+                cylinder(
+                    h = pcb_support_nut_depth + cut_overlap,
+                    r = nut_radius,
+                    $fn = 6
+                );
+    }
+}
+
 module bottom_case() {
     difference() {
         union() {
@@ -264,11 +332,13 @@ module bottom_case() {
 
             rear_pcb_guide_rails();
             leg_hole_bosses();
+            pcb_support_bosses();
         }
 
         rear_pcb_opening();
         rear_top_edge_chamfer_cut();
         leg_hole_cuts();
+        pcb_support_cuts();
     }
 }
 

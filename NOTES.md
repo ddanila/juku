@@ -78,6 +78,12 @@ All dimensions are in millimeters.
 | Leg exterior counterbore | 5.5 diameter x 1.5 deep |
 | Leg interior reinforcement | 5.5 diameter x 1.5 high |
 | Leg hole cylinder segments | 128 |
+| PCB support through-hole | 3.5 diameter |
+| PCB support exterior nut pocket | Hexagonal, 6 across flats x 3 deep |
+| PCB support interior reinforcement | 12 diameter x 3 high |
+| PCB support rear row centers | X: 25, 128, 231, 315; Y: 272 |
+| PCB support side centers | X: 25, 315; Y: 152 |
+| PCB support front row centers | X: 25, 120, 215, 315; Y: 32 |
 
 The case is an open-top shell with 3 mm walls and floor. The front and both
 sides have an 8 mm external bottom chamfer; the rear remains square. The
@@ -100,3 +106,9 @@ the case rim.
 Four leg mounting holes are positioned symmetrically near the corners. Each
 has a through-hole, a concentric counterbore entering from the exterior
 underside, and a concentric reinforcement boss rising from the inner floor.
+
+Ten PCB supports form three centered rows. The rear and front rows have four
+supports each, while the middle row has one support at each shared outer X
+coordinate. Each support has a through-hole, a 3 mm-deep hexagonal nut
+pocket entering from the exterior underside, and a 12 mm-diameter
+reinforcement boss rising 3 mm from the inner floor.
