@@ -1,18 +1,50 @@
-# Juku keycap
+# Juku models
 
-A keycap for the Juku keyboard, modeled in OpenSCAD: dished top, rounded
-chamfered sides, a central spring rod, contact pushers and side latches
-that clip into the switch housing.
-
-The model lives in `juku_keycap.scad`; everything else (STL, images) is
-generated from it. Technical details are in [NOTES.md](NOTES.md).
+OpenSCAD models for restoring and reproducing parts of the Juku computer.
+Technical dimensions and modeling details are in [NOTES.md](NOTES.md).
 
 > [!NOTE]
-> This project is an experiment: can an LLM fully create a 3D model of
-> medium complexity? Turns out it can. All the code was written by an LLM
-> (mostly GPT-5.5 via Codex) with no manual edits.
+> This project is an experiment in creating medium-complexity 3D models
+> with an LLM. The OpenSCAD code was written through Codex without manual
+> code edits.
+
+## Models
+
+### Keycap
+
+The keycap has a dished top, rounded chamfered sides, a central spring rod,
+contact pushers, and side latches that clip into the switch housing.
 
 |  | Top | Bottom |
 | --- | --- | --- |
-| Render | ![Top render](preview_top.png) | ![Bottom render](preview_bottom.png) |
-| Print | ![Top of the printed keycap](3d_printed_top.jpeg) | ![Bottom of the printed keycap](3d_printed_bottom.jpeg) |
+| Original | ![Top of an original Juku keycap](keycap/original-top.jpg) | ![Bottom of an original Juku keycap](keycap/original-bottom.jpg) |
+| Render | ![Top keycap render](keycap/preview-top.png) | ![Bottom keycap render](keycap/preview-bottom.png) |
+| Print | ![Top of the printed keycap](keycap/printed-top.jpeg) | ![Bottom of the printed keycap](keycap/printed-bottom.jpeg) |
+
+- Source: [`keycap/juku-keycap.scad`](keycap/juku-keycap.scad)
+- Printable model: [`keycap/juku-keycap.stl`](keycap/juku-keycap.stl)
+
+### Bottom Case
+
+The bottom part of the computer case includes the PCB opening and guide,
+leg mounting holes, and reinforced PCB support mounts.
+
+![Bottom case render](bottom-case/preview.png)
+
+- Source: [`bottom-case/juku-bottom-case.scad`](bottom-case/juku-bottom-case.scad)
+- Printable model: [`bottom-case/juku-bottom-case.stl`](bottom-case/juku-bottom-case.stl)
+
+## Commands
+
+```bash
+# Open a model for interactive inspection.
+./scripts/open-keycap.sh
+./scripts/open-bottom-case.sh
+
+# Validate both models without changing committed artifacts.
+./scripts/check-render.sh
+
+# Regenerate committed STL files and previews.
+./scripts/export-stls.sh
+./scripts/render-previews.sh
+```

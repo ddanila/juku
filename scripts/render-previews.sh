@@ -2,7 +2,6 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-scad_file="$repo_root/juku_keycap.scad"
 
 # Find the OpenSCAD binary (Snap on Linux, app bundle on macOS).
 if command -v openscad-nightly >/dev/null; then
@@ -16,21 +15,12 @@ else
     exit 1
 fi
 
-# Install the uniform color scheme into OpenSCAD's user scheme directory.
-if [ "$(uname)" = Darwin ]; then
-    scheme_dir="$HOME/Library/Application Support/OpenSCAD/color-schemes/render"
-else
-    scheme_dir="${XDG_DATA_HOME:-$HOME/.local/share}/OpenSCAD/color-schemes/render"
-fi
-mkdir -p "$scheme_dir"
-cp "$repo_root/scripts/juku-uniform.json" "$scheme_dir/"
-
 # Render at 8x the target size, then downscale to 1600x1200 for antialiasing
 # (OpenSCAD's CLI renders without antialiasing).
 render() {
-    local out="$1" camera="$2"
-    "$openscad" -o "$out" --render --imgsize=12800,9600 --autocenter --viewall \
-        --camera="$camera" --colorscheme=JukuUniform -D '$fn=256' "$scad_file"
+    local scad_file="$1" out="$2" camera="$3" width="$4" height="$5"
+    "$openscad" -o "$out" --render --imgsize="$width,$height" --autocenter --viewall \
+        --camera="$camera" --colorscheme=Monotone -D '$fn=256' "$scad_file"
     if command -v sips >/dev/null; then
         sips -z 1200 1600 "$out" >/dev/null
     elif command -v magick >/dev/null; then
@@ -40,5 +30,20 @@ render() {
     fi
 }
 
-render "$repo_root/preview_top.png" 0,0,0,55,0,25,140
-render "$repo_root/preview_bottom.png" 0,0,0,235,0,205,140
+render \
+    "$repo_root/keycap/juku-keycap.scad" \
+    "$repo_root/keycap/preview-top.png" \
+    0,0,0,55,0,25,140 \
+    12800 9600
+
+render \
+    "$repo_root/keycap/juku-keycap.scad" \
+    "$repo_root/keycap/preview-bottom.png" \
+    0,0,0,235,0,205,140 \
+    12800 9600
+
+render \
+    "$repo_root/bottom-case/juku-bottom-case.scad" \
+    "$repo_root/bottom-case/preview.png" \
+    0,0,0,55,0,25,160 \
+    3200 2400

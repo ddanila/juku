@@ -1,4 +1,4 @@
-# Juku Keycap Notes
+# Juku Modeling Notes
 
 ## OpenSCAD command
 
@@ -16,18 +16,27 @@ alias openscad=openscad-nightly
 
 On macOS the binary is inside the app bundle: `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD`.
 
-## Generated artifacts
+## Repository layout
 
-`juku_keycap.scad` is the only source file. Everything else is generated from it and must not be edited by hand:
+Each modeled component keeps its source and generated artifacts together:
 
-| File | Regenerate with |
-| --- | --- |
-| `juku_keycap.stl` | `openscad -o juku_keycap.stl --export-format binstl juku_keycap.scad` |
-| `preview_top.png`, `preview_bottom.png` | `./scripts/render-previews.sh` |
+| Component | Source | Generated artifacts |
+| --- | --- | --- |
+| Keycap | `keycap/juku-keycap.scad` | `keycap/juku-keycap.stl`, `keycap/preview-*.png` |
+| Bottom case | `bottom-case/juku-bottom-case.scad` | `bottom-case/juku-bottom-case.stl`, `bottom-case/preview.png` |
 
-The preview script renders at 8x the target size and downscales to 1600x1200, because OpenSCAD's CLI renders without antialiasing. It uses the `JukuUniform` color scheme (`scripts/juku-uniform.json`, installed into OpenSCAD's user scheme directory automatically) so that subtraction-cut surfaces don't get the distinct "back face" color.
+Regenerate STL files with `./scripts/export-stls.sh` and previews with
+`./scripts/render-previews.sh`. Generated model artifacts should not be
+edited by hand.
 
-`3d_printed_top.jpeg` and `3d_printed_bottom.jpeg` are photos of a real print on a resin (photopolymer) printer, with metadata stripped.
+The preview script renders above the target resolution and downscales to
+1600x1200 because OpenSCAD's CLI renders without antialiasing. It uses
+OpenSCAD's built-in `Monotone` color scheme so subtraction-cut surfaces do
+not get a distinct back-face color.
+
+`keycap/original-*.jpg` are reference photos of an original keycap.
+`keycap/printed-*.jpeg` are photos of a real resin print, with metadata
+stripped.
 
 ## Iteration workflow
 
@@ -44,7 +53,8 @@ After each modeling change:
 3. Open the SCAD file in OpenSCAD for manual review from a normal desktop terminal or the application launcher.
 
    ```bash
-   ./scripts/open-openscad.sh
+   ./scripts/open-keycap.sh
+   ./scripts/open-bottom-case.sh
    ```
 
 Codex can run the automated render check reliably. It can also attempt to launch the OpenSCAD UI, but Snap/desktop session handling may make that window flash briefly or disappear, so manual review is best started from the user's desktop session.
