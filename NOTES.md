@@ -94,6 +94,11 @@ All dimensions are in millimeters.
 | PCB support rear row centers | X: 25, 128, 231, 315; Y: 272 |
 | PCB support side centers | X: 25, 315; Y: 152 |
 | PCB support front row centers | X: 25, 120, 215, 315; Y: 32 |
+| Lid mount side centers | X: 7, 333; Y: 25, 265 |
+| Lid mount front center | X: 170; Y: 7 |
+| Lid mount through-hole | 3 diameter |
+| Lid mount exterior recess | 8 wide x 5.5 deep, round-ended and projected to outer edge |
+| Lid mount interior reinforcement | 13 diameter x 7 high, clipped to D shape |
 
 The case is an open-top shell with 3 mm walls and floor. The front and both
 sides have an 8 mm external bottom chamfer; the rear remains square. The
@@ -122,3 +127,8 @@ supports each, while the middle row has one support at each shared outer X
 coordinate. Each support has a through-hole, a 3 mm-deep hexagonal nut
 pocket entering from the exterior underside, and a 12 mm-diameter
 reinforcement boss rising 3 mm from the inner floor.
+
+Five top-lid mounts sit in the front and side bottom-chamfer bands. Four are
+paired near the front and rear ends of the side walls, and one is centered
+on the front wall. Their circular bosses and exterior recesses are clipped
+by the case shell to form D-shaped profiles toward the adjacent wall.

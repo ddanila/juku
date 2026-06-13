@@ -28,6 +28,14 @@ pcb_support_front_x = [25, 120, 215, outside_width - 25];
 pcb_support_rear_y = outside_depth - 18;
 pcb_support_middle_y = pcb_support_rear_y - 120;
 pcb_support_front_y = pcb_support_middle_y - 120;
+lid_mount_edge_offset = 7;
+lid_mount_end_offset = 25;
+lid_mount_hole_diameter = 3;
+lid_mount_boss_diameter = 13;
+lid_mount_boss_height = 7;
+lid_mount_recess_diameter = 8;
+lid_mount_recess_depth = 5.5;
+lid_mount_segments = 128;
 rear_outer_rail_depth = 4;
 rear_rail_gap = 2;
 rear_inner_rail_depth = 3;
@@ -80,6 +88,15 @@ assert(pcb_support_nut_depth > 0);
 assert(pcb_support_nut_depth <= case_thickness);
 assert(pcb_support_segments >= 3);
 assert(pcb_support_front_y > 0);
+assert(lid_mount_edge_offset > 0);
+assert(lid_mount_edge_offset < bottom_chamfer);
+assert(lid_mount_end_offset > 0);
+assert(lid_mount_hole_diameter > 0);
+assert(lid_mount_boss_diameter > lid_mount_hole_diameter);
+assert(lid_mount_boss_height > 0);
+assert(lid_mount_recess_diameter > lid_mount_hole_diameter);
+assert(lid_mount_recess_depth > case_thickness);
+assert(lid_mount_segments >= 3);
 assert(rear_outer_rail_depth > 0);
 assert(rear_rail_gap > 0);
 assert(rear_inner_rail_depth > 0);
@@ -322,6 +339,112 @@ module pcb_support_cuts() {
     }
 }
 
+module lid_mount_positions() {
+    for (
+        x = [
+            lid_mount_edge_offset,
+            outside_width - lid_mount_edge_offset
+        ],
+        y = [
+            lid_mount_end_offset,
+            outside_depth - lid_mount_end_offset
+        ]
+    ) {
+        translate([x, y, 0])
+            children();
+    }
+
+    translate([outside_width / 2, lid_mount_edge_offset, 0])
+        children();
+}
+
+module lid_mount_recess_2d(direction) {
+    projection_length = lid_mount_edge_offset + cut_overlap;
+
+    union() {
+        circle(d = lid_mount_recess_diameter, $fn = lid_mount_segments);
+
+        if (direction[0] < 0)
+            translate([-projection_length / 2, 0])
+                square(
+                    [projection_length, lid_mount_recess_diameter],
+                    center = true
+                );
+        else if (direction[0] > 0)
+            translate([projection_length / 2, 0])
+                square(
+                    [projection_length, lid_mount_recess_diameter],
+                    center = true
+                );
+        else
+            translate([0, -projection_length / 2])
+                square(
+                    [lid_mount_recess_diameter, projection_length],
+                    center = true
+                );
+    }
+}
+
+module lid_mount_bosses() {
+    intersection() {
+        outside_shape();
+
+        union() {
+            lid_mount_positions()
+                translate([0, 0, case_thickness])
+                    cylinder(
+                        h = lid_mount_boss_height,
+                        d = lid_mount_boss_diameter,
+                        $fn = lid_mount_segments
+                    );
+        }
+    }
+}
+
+module lid_mount_cuts() {
+    for (
+        x = [
+            lid_mount_edge_offset,
+            outside_width - lid_mount_edge_offset
+        ],
+        y = [
+            lid_mount_end_offset,
+            outside_depth - lid_mount_end_offset
+        ]
+    ) {
+        direction = x < outside_width / 2 ? [-1, 0] : [1, 0];
+
+        translate([0, 0, -cut_overlap])
+            translate([x, y, 0])
+                cylinder(
+                    h =
+                        case_thickness
+                        + lid_mount_boss_height
+                        + 2 * cut_overlap,
+                    d = lid_mount_hole_diameter,
+                    $fn = lid_mount_segments
+                );
+
+        translate([x, y, -cut_overlap])
+            linear_extrude(height = lid_mount_recess_depth + cut_overlap)
+                lid_mount_recess_2d(direction);
+    }
+
+    translate([outside_width / 2, lid_mount_edge_offset, -cut_overlap]) {
+        cylinder(
+            h =
+                case_thickness
+                + lid_mount_boss_height
+                + 2 * cut_overlap,
+            d = lid_mount_hole_diameter,
+            $fn = lid_mount_segments
+        );
+
+        linear_extrude(height = lid_mount_recess_depth + cut_overlap)
+            lid_mount_recess_2d([0, -1]);
+    }
+}
+
 module bottom_case() {
     difference() {
         union() {
@@ -333,12 +456,14 @@ module bottom_case() {
             rear_pcb_guide_rails();
             leg_hole_bosses();
             pcb_support_bosses();
+            lid_mount_bosses();
         }
 
         rear_pcb_opening();
         rear_top_edge_chamfer_cut();
         leg_hole_cuts();
         pcb_support_cuts();
+        lid_mount_cuts();
     }
 }
 
