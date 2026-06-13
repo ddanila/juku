@@ -47,4 +47,9 @@ leg mounting holes, and reinforced PCB support mounts.
 # Regenerate committed STL files and previews.
 ./scripts/export-stls.sh
 ./scripts/render-previews.sh
+
+# Export the bottom-case XY projection for LibreCAD.
+openscad-nightly \
+    -o bottom-case/projection-xy.dxf \
+    bottom-case/projection-xy.scad
 ```
