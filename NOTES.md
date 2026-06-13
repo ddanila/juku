@@ -73,6 +73,11 @@ All dimensions are in millimeters.
 | Rear outer guide rail | 312 long x 4 deep x 15 high |
 | Rear guide channel | 2 deep, with the case floor at its bottom |
 | Rear inner guide rail | 306 long x 3 deep x 15 high |
+| Leg hole centers | 15 from each adjacent outer edge |
+| Leg through-hole | 3.5 diameter |
+| Leg exterior counterbore | 5.5 diameter x 1.5 deep |
+| Leg interior reinforcement | 5.5 diameter x 1.5 high |
+| Leg hole cylinder segments | 128 |
 
 The case is an open-top shell with 3 mm walls and floor. The front and both
 sides have an 8 mm external bottom chamfer; the rear remains square. The
@@ -91,3 +96,7 @@ rear wall and the complete guide depth from Z=6 to Z=18. The guide extends
 down to the inner floor at Z=3, leaving a continuous 3 mm-high base beneath
 the opening. Its exterior top edge has the same 3 mm, 45-degree chamfer as
 the case rim.
+
+Four leg mounting holes are positioned symmetrically near the corners. Each
+has a through-hole, a concentric counterbore entering from the exterior
+underside, and a concentric reinforcement boss rising from the inner floor.

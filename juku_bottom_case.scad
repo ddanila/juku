@@ -9,6 +9,13 @@ bottom_chamfer = 8;
 top_edge_chamfer = 3;
 rear_pcb_opening_width = 300;
 rear_pcb_opening_height = 12;
+leg_hole_edge_offset = 15;
+leg_hole_diameter = 3.5;
+leg_counterbore_diameter = 5.5;
+leg_counterbore_depth = 1.5;
+leg_boss_diameter = 5.5;
+leg_boss_height = 1.5;
+leg_hole_segments = 128;
 rear_outer_rail_depth = 4;
 rear_rail_gap = 2;
 rear_inner_rail_depth = 3;
@@ -45,6 +52,14 @@ assert(rear_pcb_opening_width > 0);
 assert(rear_pcb_opening_width < outside_width);
 assert(rear_pcb_opening_height > 0);
 assert(rear_pcb_opening_height < outside_height);
+assert(leg_hole_edge_offset > bottom_chamfer);
+assert(leg_hole_diameter > 0);
+assert(leg_counterbore_diameter > leg_hole_diameter);
+assert(leg_counterbore_depth > 0);
+assert(leg_counterbore_depth < case_thickness);
+assert(leg_boss_diameter >= leg_hole_diameter);
+assert(leg_boss_height > 0);
+assert(leg_hole_segments >= 3);
 assert(rear_outer_rail_depth > 0);
 assert(rear_rail_gap > 0);
 assert(rear_inner_rail_depth > 0);
@@ -192,6 +207,53 @@ module rear_top_edge_chamfer_cut() {
                 ]);
 }
 
+module leg_hole_bosses() {
+    for (
+        x = [
+            leg_hole_edge_offset,
+            outside_width - leg_hole_edge_offset
+        ],
+        y = [
+            leg_hole_edge_offset,
+            outside_depth - leg_hole_edge_offset
+        ]
+    ) {
+        translate([x, y, case_thickness])
+            cylinder(
+                h = leg_boss_height,
+                d = leg_boss_diameter,
+                $fn = leg_hole_segments
+            );
+    }
+}
+
+module leg_hole_cuts() {
+    for (
+        x = [
+            leg_hole_edge_offset,
+            outside_width - leg_hole_edge_offset
+        ],
+        y = [
+            leg_hole_edge_offset,
+            outside_depth - leg_hole_edge_offset
+        ]
+    ) {
+        translate([x, y, -cut_overlap])
+            cylinder(
+                h = case_thickness + leg_boss_height + 2 * cut_overlap,
+                d = leg_hole_diameter,
+                $fn = leg_hole_segments
+            );
+
+        translate([x, y, -cut_overlap])
+            cylinder(
+                h = leg_counterbore_depth + cut_overlap,
+                d = leg_counterbore_diameter,
+                $fn = leg_hole_segments
+            );
+    }
+}
+
 module bottom_case() {
     difference() {
         union() {
@@ -201,10 +263,12 @@ module bottom_case() {
             }
 
             rear_pcb_guide_rails();
+            leg_hole_bosses();
         }
 
         rear_pcb_opening();
         rear_top_edge_chamfer_cut();
+        leg_hole_cuts();
     }
 }
 
