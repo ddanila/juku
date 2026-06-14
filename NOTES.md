@@ -99,6 +99,9 @@ All dimensions are in millimeters.
 | Lid mount through-hole | 3 diameter |
 | Lid mount exterior recess | 8 wide x 5.5 deep, round-ended and projected to outer edge |
 | Lid mount interior reinforcement | 13 diameter x 7 high, clipped to D shape |
+| Logo plaque | 30 wide x 10 deep x 0.6 recessed into underside |
+| Logo plaque front offset | 50 to front edge |
+| Logo relief | 0.6 above recessed plaque floor, flush with underside |
 
 The case is an open-top shell with 3 mm walls and floor. The front and both
 sides have an 8 mm external bottom chamfer; the rear remains square. The
@@ -133,3 +136,9 @@ paired near the front and rear ends of the side walls, and one is centered
 on the front wall. Their inner bosses and exterior recesses have round inner
 ends with straight projections toward the adjacent wall, forming D-shaped
 profiles.
+
+The exterior underside has a centered 30 x 10 mm logo plaque whose front
+edge is 50 mm from the front of the case. Its background is recessed 0.6 mm
+into the case, leaving the imported Estron letters and decorative lines
+standing 0.6 mm above the plaque floor, flush with the original underside.
+The vector source is `bottom-case/estron-logo.dxf`.

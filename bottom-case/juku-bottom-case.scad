@@ -36,6 +36,26 @@ lid_mount_boss_height = 7;
 lid_mount_recess_diameter = 8;
 lid_mount_recess_depth = 5.5;
 lid_mount_segments = 128;
+logo_plaque_width = 30;
+logo_plaque_depth = 10;
+logo_plaque_front_offset = 50;
+logo_plaque_depth_into_case = 0.6;
+logo_height = 0.6;
+logo_margin = 1.2;
+logo_dxf_min_x = -0.4367642811194372;
+logo_dxf_min_y = -2;
+logo_dxf_width = 29.39264521818426 - logo_dxf_min_x;
+logo_dxf_depth = 6 - logo_dxf_min_y;
+logo_scale = min(
+    (logo_plaque_width - 2 * logo_margin) / logo_dxf_width,
+    (logo_plaque_depth - 2 * logo_margin) / logo_dxf_depth
+);
+logo_width = logo_dxf_width * logo_scale;
+logo_depth = logo_dxf_depth * logo_scale;
+logo_plaque_x = (outside_width - logo_plaque_width) / 2;
+logo_plaque_y = logo_plaque_front_offset;
+logo_x = logo_plaque_x + (logo_plaque_width - logo_width) / 2;
+logo_y = logo_plaque_y + (logo_plaque_depth - logo_depth) / 2;
 rear_outer_rail_depth = 4;
 rear_rail_gap = 2;
 rear_inner_rail_depth = 3;
@@ -97,6 +117,15 @@ assert(lid_mount_boss_height > 0);
 assert(lid_mount_recess_diameter > lid_mount_hole_diameter);
 assert(lid_mount_recess_depth > case_thickness);
 assert(lid_mount_segments >= 3);
+assert(logo_plaque_width > 0);
+assert(logo_plaque_depth > 0);
+assert(logo_plaque_front_offset > bottom_chamfer);
+assert(logo_plaque_depth_into_case > 0);
+assert(logo_height > 0);
+assert(logo_height <= logo_plaque_depth_into_case);
+assert(logo_margin >= 0);
+assert(2 * logo_margin < logo_plaque_width);
+assert(2 * logo_margin < logo_plaque_depth);
 assert(rear_outer_rail_depth > 0);
 assert(rear_rail_gap > 0);
 assert(rear_inner_rail_depth > 0);
@@ -489,6 +518,29 @@ module lid_mount_cuts() {
     }
 }
 
+module underside_logo_recess_cut() {
+    translate([
+        logo_plaque_x,
+        logo_plaque_y,
+        -cut_overlap
+    ])
+        linear_extrude(
+            height = logo_plaque_depth_into_case + cut_overlap
+        )
+            difference() {
+                square([logo_plaque_width, logo_plaque_depth]);
+
+                translate([
+                    logo_x - logo_plaque_x,
+                    logo_y - logo_plaque_y + logo_depth
+                ])
+                    mirror([0, 1, 0])
+                        scale([logo_scale, logo_scale])
+                            translate([-logo_dxf_min_x, -logo_dxf_min_y])
+                                import("estron-logo.dxf");
+            }
+}
+
 module bottom_case() {
     difference() {
         union() {
@@ -508,6 +560,7 @@ module bottom_case() {
         leg_hole_cuts();
         pcb_support_cuts();
         lid_mount_cuts();
+        underside_logo_recess_cut();
     }
 }
 
