@@ -102,6 +102,8 @@ All dimensions are in millimeters.
 | Logo plaque | 30 wide x 10 deep x 0.6 recessed into underside |
 | Logo plaque front offset | 50 to front edge |
 | Logo relief | 0.6 above recessed plaque floor, flush with underside |
+| Serial plate recess | 30 wide x 20 deep x 0.6 recessed into underside |
+| Serial plate recess gap | 20 behind Estron plaque |
 
 The case is an open-top shell with 3 mm walls and floor. The front and both
 sides have an 8 mm external bottom chamfer; the rear remains square. The
@@ -142,3 +144,7 @@ edge is 50 mm from the front of the case. Its background is recessed 0.6 mm
 into the case, leaving the imported Estron letters and decorative lines
 standing 0.6 mm above the plaque floor, flush with the original underside.
 The vector source is `bottom-case/estron-logo.dxf`.
+
+A second plain rectangular recess for the model and serial-number plate is
+centered on the underside. It measures 30 x 20 mm, has the same 0.6 mm
+depth, and starts 20 mm behind the rear edge of the Estron plaque.

@@ -56,6 +56,14 @@ logo_plaque_x = (outside_width - logo_plaque_width) / 2;
 logo_plaque_y = logo_plaque_front_offset;
 logo_x = logo_plaque_x + (logo_plaque_width - logo_width) / 2;
 logo_y = logo_plaque_y + (logo_plaque_depth - logo_depth) / 2;
+serial_plate_recess_width = 30;
+serial_plate_recess_depth = 20;
+serial_plate_recess_gap = 20;
+serial_plate_recess_depth_into_case = logo_plaque_depth_into_case;
+serial_plate_recess_x =
+    (outside_width - serial_plate_recess_width) / 2;
+serial_plate_recess_y =
+    logo_plaque_y + logo_plaque_depth + serial_plate_recess_gap;
 rear_outer_rail_depth = 4;
 rear_rail_gap = 2;
 rear_inner_rail_depth = 3;
@@ -126,6 +134,14 @@ assert(logo_height <= logo_plaque_depth_into_case);
 assert(logo_margin >= 0);
 assert(2 * logo_margin < logo_plaque_width);
 assert(2 * logo_margin < logo_plaque_depth);
+assert(serial_plate_recess_width > 0);
+assert(serial_plate_recess_depth > 0);
+assert(serial_plate_recess_gap >= 0);
+assert(serial_plate_recess_depth_into_case > 0);
+assert(
+    serial_plate_recess_y + serial_plate_recess_depth
+    < outside_depth - bottom_chamfer
+);
 assert(rear_outer_rail_depth > 0);
 assert(rear_rail_gap > 0);
 assert(rear_inner_rail_depth > 0);
@@ -537,8 +553,21 @@ module underside_logo_recess_cut() {
                     mirror([0, 1, 0])
                         scale([logo_scale, logo_scale])
                             translate([-logo_dxf_min_x, -logo_dxf_min_y])
-                                import("estron-logo.dxf");
+                            import("estron-logo.dxf");
             }
+}
+
+module underside_serial_plate_recess_cut() {
+    translate([
+        serial_plate_recess_x,
+        serial_plate_recess_y,
+        -cut_overlap
+    ])
+        cube([
+            serial_plate_recess_width,
+            serial_plate_recess_depth,
+            serial_plate_recess_depth_into_case + cut_overlap
+        ]);
 }
 
 module bottom_case() {
@@ -561,6 +590,7 @@ module bottom_case() {
         pcb_support_cuts();
         lid_mount_cuts();
         underside_logo_recess_cut();
+        underside_serial_plate_recess_cut();
     }
 }
 
