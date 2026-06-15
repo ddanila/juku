@@ -12,3 +12,7 @@ openscad-nightly \
 openscad-nightly \
     -o "$tmp_dir/juku-bottom-case.stl" \
     "$repo_root/bottom-case/juku-bottom-case.scad"
+
+openscad-nightly \
+    -o "$tmp_dir/juku-bottom-case-split.stl" \
+    "$repo_root/bottom-case/juku-bottom-case-split.scad"

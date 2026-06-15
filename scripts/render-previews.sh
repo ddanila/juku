@@ -79,3 +79,21 @@ render_zoom \
     "$repo_root/bottom-case/preview-supports.png" \
     325,280,9,60,0,325,136 \
     3200 2400
+
+# 4-part split previews (see bottom-case/SPLITTING.md). Like render(), but with
+# a split_part override so each quadrant - and the exploded overview - is framed
+# from the same isometric angle as the one-piece preview.
+render_split() {
+    local out="$1" part="$2"
+    "$openscad" -o "$out" --render --backend Manifold --imgsize=3200,2400 \
+        --autocenter --viewall \
+        --camera=0,0,0,55,0,25,160 --colorscheme=Monotone \
+        -D '$fn=256' -D "split_part=\"$part\"" \
+        "$repo_root/bottom-case/juku-bottom-case-split.scad"
+    downscale "$out"
+}
+
+render_split "$repo_root/bottom-case/preview-split.png" all
+for part in fl fr bl br; do
+    render_split "$repo_root/bottom-case/preview-split-$part.png" "$part"
+done
