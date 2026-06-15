@@ -5,8 +5,8 @@ Technical dimensions and modeling details are in [NOTES.md](NOTES.md).
 
 > [!NOTE]
 > This project is an experiment in creating medium-complexity 3D models
-> with an LLM. The OpenSCAD code was written through Codex without manual
-> code edits.
+> with an LLM. The OpenSCAD code was written through Codex with almost no
+> manual code edits.
 
 ## Models
 
@@ -29,7 +29,9 @@ contact pushers, and side latches that clip into the switch housing.
 The bottom part of the computer case includes the PCB opening and guide,
 leg mounting holes, and reinforced PCB support mounts.
 
-![Bottom case render](bottom-case/preview.png)
+| Interior | Underside (logo) | Rear edge (supports) |
+| --- | --- | --- |
+| ![Bottom case interior render](bottom-case/preview.png) | ![Bottom case underside render with logo](bottom-case/preview-logo.png) | ![Bottom case rear-edge render showing guide rails and support bosses](bottom-case/preview-supports.png) |
 
 - Source: [`bottom-case/juku-bottom-case.scad`](bottom-case/juku-bottom-case.scad)
 - Printable model: [`bottom-case/juku-bottom-case.stl`](bottom-case/juku-bottom-case.stl)

@@ -220,10 +220,12 @@ module rear_pcb_opening() {
         rear_inner_rail_y - cut_overlap,
         rear_pcb_opening_z
     ])
+        // Over-cut past the top rim (+cut_overlap) so the opening clears the
+        // top-edge chamfer instead of leaving a thin remnant on its edge.
         cube([
             rear_pcb_opening_width,
             outside_depth - rear_inner_rail_y + 2 * cut_overlap,
-            rear_pcb_opening_height
+            rear_pcb_opening_height + cut_overlap
         ]);
 }
 
