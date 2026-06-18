@@ -1,6 +1,8 @@
 // Juku bottom case
 // Units: millimeters
 
+include <leg-interface.scad>
+
 outside_width = 340;
 outside_depth = 290;
 outside_height = 18;
@@ -9,13 +11,6 @@ bottom_chamfer = 8;
 top_edge_chamfer = 3;
 rear_pcb_opening_width = 300;
 rear_pcb_opening_height = 12;
-leg_hole_edge_offset = 15;
-leg_hole_diameter = 3.5;
-leg_counterbore_diameter = 5;
-leg_counterbore_depth = 1.5;
-leg_boss_diameter = 7;
-leg_boss_height = 1.5;
-leg_hole_segments = 128;
 pcb_support_hole_diameter = 3.5;
 pcb_support_boss_diameter = 12;
 pcb_support_boss_height = 3;
@@ -107,6 +102,7 @@ assert(leg_counterbore_depth > 0);
 assert(leg_counterbore_depth < case_thickness);
 assert(leg_boss_diameter >= leg_hole_diameter);
 assert(leg_boss_height > 0);
+assert(leg_through_hole_depth == case_thickness + leg_boss_height);
 assert(leg_hole_segments >= 3);
 assert(pcb_support_hole_diameter > 0);
 assert(pcb_support_boss_diameter > pcb_support_hole_diameter);
@@ -292,44 +288,25 @@ module rear_top_edge_chamfer_cut() {
 }
 
 module leg_hole_bosses() {
-    for (
-        x = [
-            leg_hole_edge_offset,
-            outside_width - leg_hole_edge_offset
-        ],
-        y = [
-            leg_hole_edge_offset,
-            outside_depth - leg_hole_edge_offset
-        ]
-    ) {
-        translate([x, y, case_thickness])
+    leg_mount_positions(outside_width, outside_depth)
+        translate([0, 0, case_thickness])
             cylinder(
                 h = leg_boss_height,
                 d = leg_boss_diameter,
                 $fn = leg_hole_segments
             );
-    }
 }
 
 module leg_hole_cuts() {
-    for (
-        x = [
-            leg_hole_edge_offset,
-            outside_width - leg_hole_edge_offset
-        ],
-        y = [
-            leg_hole_edge_offset,
-            outside_depth - leg_hole_edge_offset
-        ]
-    ) {
-        translate([x, y, -cut_overlap])
+    leg_mount_positions(outside_width, outside_depth) {
+        translate([0, 0, -cut_overlap])
             cylinder(
                 h = case_thickness + leg_boss_height + 2 * cut_overlap,
                 d = leg_hole_diameter,
                 $fn = leg_hole_segments
             );
 
-        translate([x, y, -cut_overlap])
+        translate([0, 0, -cut_overlap])
             cylinder(
                 h = leg_counterbore_depth + cut_overlap,
                 d = leg_counterbore_diameter,

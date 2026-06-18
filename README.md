@@ -36,6 +36,15 @@ leg mounting holes, and reinforced PCB support mounts.
 - Source: [`bottom-case/juku-bottom-case.scad`](bottom-case/juku-bottom-case.scad)
 - Printable model: [`bottom-case/juku-bottom-case.stl`](bottom-case/juku-bottom-case.stl)
 
+### Legs
+
+The rubber legs are simple stepped push-in feet matched to the bottom-case
+mounting holes.
+
+- Source: [`legs/juku-leg.scad`](legs/juku-leg.scad)
+- Printable/reference model: [`legs/juku-leg.stl`](legs/juku-leg.stl)
+- Assembly check: [`assembly/juku-bottom-with-legs.scad`](assembly/juku-bottom-with-legs.scad)
+
 ## Commands
 
 ```bash

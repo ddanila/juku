@@ -13,6 +13,11 @@ openscad-nightly \
     --export-format binstl \
     "$repo_root/bottom-case/juku-bottom-case.scad"
 
+openscad-nightly \
+    -o "$repo_root/legs/juku-leg.stl" \
+    --export-format binstl \
+    "$repo_root/legs/juku-leg.scad"
+
 # 4-part split of the bottom case, for beds smaller than the 340x290 footprint
 # (see bottom-case/SPLITTING.md). The one-piece STL above stays canonical.
 for part in fl fr bl br; do

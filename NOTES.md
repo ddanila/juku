@@ -24,6 +24,7 @@ Each modeled component keeps its source and generated artifacts together:
 | --- | --- | --- |
 | Keycap | `keycap/juku-keycap.scad` | `keycap/juku-keycap.stl`, `keycap/preview-*.png` |
 | Bottom case | `bottom-case/juku-bottom-case.scad` | `bottom-case/juku-bottom-case.stl`, `bottom-case/preview.png` |
+| Legs | `legs/juku-leg.scad` | `legs/juku-leg.stl` |
 
 Regenerate STL files with `./scripts/export-stls.sh` and previews with
 `./scripts/render-previews.sh`. Generated model artifacts should not be
@@ -85,8 +86,9 @@ All dimensions are in millimeters.
 | Rear inner guide rail | 306 long x 3 deep x 15 high |
 | Leg hole centers | 15 from each adjacent outer edge |
 | Leg through-hole | 3.5 diameter |
-| Leg exterior counterbore | 5.5 diameter x 1.5 deep |
-| Leg interior reinforcement | 5.5 diameter x 1.5 high |
+| Leg exterior counterbore | 5 diameter x 1.5 deep |
+| Leg interior reinforcement | 7 diameter x 1.5 high |
+| Leg through-hole depth | 4.5 including floor and reinforcement boss |
 | Leg hole cylinder segments | 128 |
 | PCB support through-hole | 3.5 diameter |
 | PCB support exterior nut pocket | Hexagonal, 6 across flats x 3 deep |
@@ -126,6 +128,14 @@ the case rim.
 Four leg mounting holes are positioned symmetrically near the corners. Each
 has a through-hole, a concentric counterbore entering from the exterior
 underside, and a concentric reinforcement boss rising from the inner floor.
+The mounting interface dimensions are shared from
+`bottom-case/leg-interface.scad` so the leg model and assembly check fail at
+render time if the mating diameters or heights drift apart.
+
+The rubber/latex/silicone leg is a stepped push-in part. From exterior to
+interior it has a 10 diameter x 3 high foot, a 5 diameter x 1.5 high
+counterbore plug, a 3.5 diameter x 3 high stem through the case floor, and a
+6 diameter x 2 high inner retaining head.
 
 Ten PCB supports form three centered rows. The rear and front rows have four
 supports each, while the middle row has one support at each shared outer X

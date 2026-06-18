@@ -16,3 +16,11 @@ openscad-nightly \
 openscad-nightly \
     -o "$tmp_dir/juku-bottom-case-split.stl" \
     "$repo_root/bottom-case/juku-bottom-case-split.scad"
+
+openscad-nightly \
+    -o "$tmp_dir/juku-leg.stl" \
+    "$repo_root/legs/juku-leg.scad"
+
+openscad-nightly \
+    -o "$tmp_dir/juku-bottom-with-legs.stl" \
+    "$repo_root/assembly/juku-bottom-with-legs.scad"
