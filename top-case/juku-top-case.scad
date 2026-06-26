@@ -27,10 +27,16 @@ logo_bevel_depth_z = 1;
 logo_bevel_x_gap_from_top_row = 10;
 logo_bevel_y_gap_from_row_5 = 2;
 led_hole_x_offset_from_logo = 70;
-led_hole_y_offset_from_logo = 12;
+led_hole_y_offset_from_logo = 11.5;
 led_hole_diameter = 6;
 led_hole_segments = 96;
 led_hole_extra_depth = 6;
+switch_access_x_offset_from_logo = 22;
+switch_access_width = 44;
+switch_access_depth_y = 12;
+switch_access_corner_radius = 6;
+switch_access_extra_depth = 12;
+switch_access_segments = 96;
 
 slope_start_y = outside_depth - slope_starts_from_back;
 cut_overlap = 0.01;
@@ -69,6 +75,19 @@ assert(led_hole_segments >= 3);
 assert(led_hole_extra_depth >= 0);
 assert(led_hole_x_offset_from_logo < logo_bevel_width);
 assert(led_hole_y_offset_from_logo < logo_bevel_depth_y);
+assert(switch_access_x_offset_from_logo >= 0);
+assert(switch_access_width > 0);
+assert(switch_access_depth_y > 0);
+assert(switch_access_corner_radius > 0);
+assert(2 * switch_access_corner_radius <= switch_access_depth_y);
+assert(switch_access_width >= 2 * switch_access_corner_radius);
+assert(switch_access_extra_depth >= 0);
+assert(switch_access_segments >= 3);
+assert(
+    switch_access_x_offset_from_logo + switch_access_width
+    <= logo_bevel_width
+);
+assert(switch_access_depth_y <= logo_bevel_depth_y);
 assert(
     slope_start_y
     + vent_cut_count * vent_cut_width
@@ -335,6 +354,50 @@ module led_hole_cut() {
         );
 }
 
+module switch_access_2d() {
+    hull() {
+        translate([
+            switch_access_corner_radius,
+            switch_access_depth_y / 2
+        ])
+            circle(
+                r = switch_access_corner_radius,
+                $fn = switch_access_segments
+            );
+
+        translate([
+            switch_access_width - switch_access_corner_radius,
+            switch_access_depth_y / 2
+        ])
+            circle(
+                r = switch_access_corner_radius,
+                $fn = switch_access_segments
+            );
+    }
+}
+
+module switch_access_cut() {
+    switch_x = logo_bevel_x() + switch_access_x_offset_from_logo;
+    switch_y =
+        logo_bevel_y()
+        + (logo_bevel_depth_y - switch_access_depth_y) / 2;
+    switch_cut_bottom =
+        inner_top_height_at(switch_y) - switch_access_extra_depth
+        - cut_overlap;
+    switch_cut_top =
+        top_height_at(switch_y + switch_access_depth_y) + cut_overlap;
+
+    translate([
+        switch_x,
+        switch_y,
+        switch_cut_bottom
+    ])
+        linear_extrude(
+            height = switch_cut_top - switch_cut_bottom
+        )
+            switch_access_2d();
+}
+
 module vent_cut(y) {
     translate([
         -cut_overlap,
@@ -369,6 +432,7 @@ module top_case() {
         keyboard_cutout();
         logo_bevel_cut();
         led_hole_cut();
+        switch_access_cut();
         ventilation_cutouts();
     }
 }
