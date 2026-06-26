@@ -15,6 +15,9 @@ keyboard_row_side_step = 9;
 keyboard_row_4_left_shift = 4;
 keyboard_row_6_right_shift = 18;
 keyboard_row_6_width = 144;
+side_wall_chamfer_height = 3;
+side_wall_chamfer_width = 2;
+side_wall_chamfer_z_overlap = 1;
 
 slope_start_y = outside_depth - slope_starts_from_back;
 cut_overlap = 0.01;
@@ -32,6 +35,11 @@ assert(keyboard_row_width > 0);
 assert(keyboard_row_depth > 0);
 assert(keyboard_row_side_step > 0);
 assert(keyboard_row_6_width > 0);
+assert(side_wall_chamfer_height > 0);
+assert(side_wall_chamfer_width > 0);
+assert(side_wall_chamfer_height < front_height);
+assert(side_wall_chamfer_width < wall_thickness);
+assert(side_wall_chamfer_z_overlap >= 0);
 
 function top_height_at(y) =
     y < slope_start_y
@@ -59,14 +67,14 @@ module shell_profile_2d() {
     ]);
 }
 
-module shell() {
+module shell(width) {
     multmatrix([
         [0, 0, 1, 0],
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 0, 1]
     ])
-        linear_extrude(height = outside_width)
+        linear_extrude(height = width)
             shell_profile_2d();
 }
 
@@ -90,6 +98,83 @@ module side_wall(x) {
         ])
             linear_extrude(height = wall_thickness)
                 side_wall_profile_2d();
+}
+
+module side_top_chamfer_fill_segment(x_outer, x_inner, y0, y1) {
+    z0 = top_height_at(y0);
+    z1 = top_height_at(y1);
+
+    polyhedron(
+        points = [
+            [x_outer, y0, z0 - side_wall_chamfer_height],
+            [x_inner, y0, z0 - side_wall_chamfer_height],
+            [x_inner, y0, z0],
+
+            [x_outer, y1, z1 - side_wall_chamfer_height],
+            [x_inner, y1, z1 - side_wall_chamfer_height],
+            [x_inner, y1, z1]
+        ],
+        faces = [
+            [0, 2, 1],
+            [3, 4, 5],
+            [0, 3, 5, 2],
+            [0, 1, 4, 3],
+            [1, 2, 5, 4]
+        ]
+    );
+}
+
+module front_side_chamfer_cut(x_outer, x_inner) {
+    translate([0, 0, -cut_overlap])
+        linear_extrude(
+            height =
+                front_height
+                + side_wall_chamfer_z_overlap
+                + 2 * cut_overlap
+        )
+            polygon([
+                [x_outer, -cut_overlap],
+                [x_inner, -cut_overlap],
+                [x_outer, side_wall_chamfer_height]
+            ]);
+}
+
+module side_top_chamfers() {
+    side_top_chamfer_fill_segment(
+        0,
+        side_wall_chamfer_width,
+        0,
+        slope_start_y
+    );
+    side_top_chamfer_fill_segment(
+        0,
+        side_wall_chamfer_width,
+        slope_start_y,
+        outside_depth
+    );
+    side_top_chamfer_fill_segment(
+        outside_width,
+        outside_width - side_wall_chamfer_width,
+        0,
+        slope_start_y
+    );
+    side_top_chamfer_fill_segment(
+        outside_width,
+        outside_width - side_wall_chamfer_width,
+        slope_start_y,
+        outside_depth
+    );
+}
+
+module side_wall_chamfer_cuts() {
+    front_side_chamfer_cut(
+        -cut_overlap,
+        side_wall_chamfer_width
+    );
+    front_side_chamfer_cut(
+        outside_width + cut_overlap,
+        outside_width - side_wall_chamfer_width
+    );
 }
 
 module keyboard_row_cut(x, y, width) {
@@ -136,11 +221,14 @@ module keyboard_cutout() {
 module top_case() {
     difference() {
         union() {
-            shell();
+            translate([side_wall_chamfer_width, 0, 0])
+                shell(outside_width - 2 * side_wall_chamfer_width);
             side_wall(0);
             side_wall(outside_width - wall_thickness);
+            side_top_chamfers();
         }
 
+        side_wall_chamfer_cuts();
         keyboard_cutout();
     }
 }
