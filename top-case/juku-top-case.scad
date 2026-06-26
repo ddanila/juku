@@ -26,6 +26,11 @@ logo_bevel_depth_y = 15;
 logo_bevel_depth_z = 1;
 logo_bevel_x_gap_from_top_row = 10;
 logo_bevel_y_gap_from_row_5 = 2;
+led_hole_x_offset_from_logo = 70;
+led_hole_y_offset_from_logo = 12;
+led_hole_diameter = 6;
+led_hole_segments = 96;
+led_hole_extra_depth = 6;
 
 slope_start_y = outside_depth - slope_starts_from_back;
 cut_overlap = 0.01;
@@ -57,6 +62,13 @@ assert(logo_bevel_depth_z > 0);
 assert(logo_bevel_depth_z < wall_thickness);
 assert(logo_bevel_x_gap_from_top_row >= 0);
 assert(logo_bevel_y_gap_from_row_5 >= 0);
+assert(led_hole_x_offset_from_logo > 0);
+assert(led_hole_y_offset_from_logo > 0);
+assert(led_hole_diameter > 0);
+assert(led_hole_segments >= 3);
+assert(led_hole_extra_depth >= 0);
+assert(led_hole_x_offset_from_logo < logo_bevel_width);
+assert(led_hole_y_offset_from_logo < logo_bevel_depth_y);
 assert(
     slope_start_y
     + vent_cut_count * vent_cut_width
@@ -71,6 +83,29 @@ function top_height_at(y) =
         : rear_height;
 
 function inner_top_height_at(y) = top_height_at(y) - wall_thickness;
+
+function keyboard_row_1_x() = keyboard_row_left_offset;
+function keyboard_row_2_x() = keyboard_row_1_x() - keyboard_row_side_step;
+function keyboard_row_3_x() = keyboard_row_2_x() - keyboard_row_side_step;
+function keyboard_row_4_x() = keyboard_row_3_x() - keyboard_row_4_left_shift;
+function keyboard_row_5_x() = keyboard_row_4_x() + keyboard_row_side_step;
+function keyboard_row_6_x() = keyboard_row_5_x() + keyboard_row_6_right_shift;
+
+function keyboard_row_1_y() = keyboard_row_front_offset;
+function keyboard_row_2_y() = keyboard_row_1_y() + keyboard_row_depth;
+function keyboard_row_3_y() = keyboard_row_2_y() + keyboard_row_depth;
+function keyboard_row_4_y() = keyboard_row_3_y() + keyboard_row_depth;
+function keyboard_row_5_y() = keyboard_row_4_y() + keyboard_row_depth;
+function keyboard_row_6_y() = keyboard_row_5_y() + keyboard_row_depth;
+
+function logo_bevel_x() =
+    keyboard_row_6_x()
+    + keyboard_row_6_width
+    + logo_bevel_x_gap_from_top_row;
+function logo_bevel_y() =
+    keyboard_row_5_y()
+    + keyboard_row_depth
+    + logo_bevel_y_gap_from_row_5;
 
 module shell_profile_2d() {
     polygon([
@@ -209,8 +244,8 @@ module keyboard_row_cut(x, y, width) {
 }
 
 module keyboard_cutout() {
-    row_1_x = keyboard_row_left_offset;
-    row_1_y = keyboard_row_front_offset;
+    row_1_x = keyboard_row_1_x();
+    row_1_y = keyboard_row_1_y();
     row_1_width = keyboard_row_width;
 
     row_2_x = row_1_x - keyboard_row_side_step;
@@ -272,35 +307,32 @@ module sloped_rect_recess_cut(x, y, width, depth_y, depth_z) {
 }
 
 module logo_bevel_cut() {
-    row_1_x = keyboard_row_left_offset;
-    row_2_x = row_1_x - keyboard_row_side_step;
-    row_3_x = row_2_x - keyboard_row_side_step;
-    row_4_x = row_3_x - keyboard_row_4_left_shift;
-    row_5_x = row_4_x + keyboard_row_side_step;
-    row_6_x = row_5_x + keyboard_row_6_right_shift;
-
-    row_1_y = keyboard_row_front_offset;
-    row_2_y = row_1_y + keyboard_row_depth;
-    row_3_y = row_2_y + keyboard_row_depth;
-    row_4_y = row_3_y + keyboard_row_depth;
-    row_5_y = row_4_y + keyboard_row_depth;
-
-    logo_x =
-        row_6_x
-        + keyboard_row_6_width
-        + logo_bevel_x_gap_from_top_row;
-    logo_y =
-        row_5_y
-        + keyboard_row_depth
-        + logo_bevel_y_gap_from_row_5;
-
     sloped_rect_recess_cut(
-        logo_x,
-        logo_y,
+        logo_bevel_x(),
+        logo_bevel_y(),
         logo_bevel_width,
         logo_bevel_depth_y,
         logo_bevel_depth_z
     );
+}
+
+module led_hole_cut() {
+    led_x = logo_bevel_x() + led_hole_x_offset_from_logo;
+    led_y = logo_bevel_y() + led_hole_y_offset_from_logo;
+
+    translate([
+        led_x,
+        led_y,
+        inner_top_height_at(led_y) - led_hole_extra_depth - cut_overlap
+    ])
+        cylinder(
+            h =
+                wall_thickness
+                + led_hole_extra_depth
+                + 2 * cut_overlap,
+            d = led_hole_diameter,
+            $fn = led_hole_segments
+        );
 }
 
 module vent_cut(y) {
@@ -336,6 +368,7 @@ module top_case() {
         side_wall_chamfer_cuts();
         keyboard_cutout();
         logo_bevel_cut();
+        led_hole_cut();
         ventilation_cutouts();
     }
 }
