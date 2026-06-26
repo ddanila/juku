@@ -14,6 +14,11 @@ openscad-nightly \
     "$repo_root/bottom-case/juku-bottom-case.scad"
 
 openscad-nightly \
+    -o "$repo_root/top-case/juku-top-case.stl" \
+    --export-format binstl \
+    "$repo_root/top-case/juku-top-case.scad"
+
+openscad-nightly \
     -o "$repo_root/legs/juku-leg.stl" \
     --export-format binstl \
     "$repo_root/legs/juku-leg.scad"
