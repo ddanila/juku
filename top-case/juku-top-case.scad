@@ -18,6 +18,9 @@ keyboard_row_6_width = 144;
 side_wall_chamfer_height = 3;
 side_wall_chamfer_width = 2;
 side_wall_chamfer_z_overlap = 1;
+vent_cut_count = 4;
+vent_cut_width = 2;
+vent_cut_gap = 3;
 
 slope_start_y = outside_depth - slope_starts_from_back;
 cut_overlap = 0.01;
@@ -40,6 +43,15 @@ assert(side_wall_chamfer_width > 0);
 assert(side_wall_chamfer_height < front_height);
 assert(side_wall_chamfer_width < wall_thickness);
 assert(side_wall_chamfer_z_overlap >= 0);
+assert(vent_cut_count > 0);
+assert(vent_cut_width > 0);
+assert(vent_cut_gap > 0);
+assert(
+    slope_start_y
+    + vent_cut_count * vent_cut_width
+    + (vent_cut_count - 1) * vent_cut_gap
+    < outside_depth - wall_thickness
+);
 
 function top_height_at(y) =
     y < slope_start_y
@@ -139,31 +151,30 @@ module front_side_chamfer_cut(x_outer, x_inner) {
             ]);
 }
 
+module left_side_top_chamfers() {
+    side_top_chamfer_fill_segment(
+        0,
+        side_wall_chamfer_width,
+        0,
+        slope_start_y
+    );
+    side_top_chamfer_fill_segment(
+        0,
+        side_wall_chamfer_width,
+        slope_start_y,
+        outside_depth
+    );
+}
+
+module right_side_top_chamfers() {
+    translate([outside_width, 0, 0])
+        mirror([1, 0, 0])
+            left_side_top_chamfers();
+}
+
 module side_top_chamfers() {
-    side_top_chamfer_fill_segment(
-        0,
-        side_wall_chamfer_width,
-        0,
-        slope_start_y
-    );
-    side_top_chamfer_fill_segment(
-        0,
-        side_wall_chamfer_width,
-        slope_start_y,
-        outside_depth
-    );
-    side_top_chamfer_fill_segment(
-        outside_width,
-        outside_width - side_wall_chamfer_width,
-        0,
-        slope_start_y
-    );
-    side_top_chamfer_fill_segment(
-        outside_width,
-        outside_width - side_wall_chamfer_width,
-        slope_start_y,
-        outside_depth
-    );
+    left_side_top_chamfers();
+    right_side_top_chamfers();
 }
 
 module side_wall_chamfer_cuts() {
@@ -218,6 +229,26 @@ module keyboard_cutout() {
     keyboard_row_cut(row_6_x, row_6_y, keyboard_row_6_width);
 }
 
+module vent_cut(y) {
+    translate([
+        -cut_overlap,
+        y,
+        inner_top_height_at(y) - cut_overlap
+    ])
+        cube([
+            outside_width + 2 * cut_overlap,
+            vent_cut_width,
+            wall_thickness + 2 * cut_overlap
+        ]);
+}
+
+module ventilation_cutouts() {
+    for (i = [0 : vent_cut_count - 1])
+        vent_cut(
+            slope_start_y + i * (vent_cut_width + vent_cut_gap)
+        );
+}
+
 module top_case() {
     difference() {
         union() {
@@ -230,6 +261,7 @@ module top_case() {
 
         side_wall_chamfer_cuts();
         keyboard_cutout();
+        ventilation_cutouts();
     }
 }
 
