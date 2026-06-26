@@ -21,6 +21,11 @@ side_wall_chamfer_z_overlap = 1;
 vent_cut_count = 4;
 vent_cut_width = 2;
 vent_cut_gap = 3;
+logo_bevel_width = 79;
+logo_bevel_depth_y = 15;
+logo_bevel_depth_z = 1;
+logo_bevel_x_gap_from_top_row = 10;
+logo_bevel_y_gap_from_row_5 = 2;
 
 slope_start_y = outside_depth - slope_starts_from_back;
 cut_overlap = 0.01;
@@ -46,6 +51,12 @@ assert(side_wall_chamfer_z_overlap >= 0);
 assert(vent_cut_count > 0);
 assert(vent_cut_width > 0);
 assert(vent_cut_gap > 0);
+assert(logo_bevel_width > 0);
+assert(logo_bevel_depth_y > 0);
+assert(logo_bevel_depth_z > 0);
+assert(logo_bevel_depth_z < wall_thickness);
+assert(logo_bevel_x_gap_from_top_row >= 0);
+assert(logo_bevel_y_gap_from_row_5 >= 0);
 assert(
     slope_start_y
     + vent_cut_count * vent_cut_width
@@ -229,6 +240,69 @@ module keyboard_cutout() {
     keyboard_row_cut(row_6_x, row_6_y, keyboard_row_6_width);
 }
 
+module sloped_rect_recess_cut(x, y, width, depth_y, depth_z) {
+    x0 = x;
+    x1 = x + width;
+    y0 = y;
+    y1 = y + depth_y;
+    z0 = top_height_at(y0);
+    z1 = top_height_at(y1);
+
+    polyhedron(
+        points = [
+            [x0, y0, z0 - depth_z],
+            [x1, y0, z0 - depth_z],
+            [x1, y1, z1 - depth_z],
+            [x0, y1, z1 - depth_z],
+
+            [x0, y0, z0 + cut_overlap],
+            [x1, y0, z0 + cut_overlap],
+            [x1, y1, z1 + cut_overlap],
+            [x0, y1, z1 + cut_overlap]
+        ],
+        faces = [
+            [0, 1, 2, 3],
+            [4, 7, 6, 5],
+            [0, 4, 5, 1],
+            [1, 5, 6, 2],
+            [2, 6, 7, 3],
+            [3, 7, 4, 0]
+        ]
+    );
+}
+
+module logo_bevel_cut() {
+    row_1_x = keyboard_row_left_offset;
+    row_2_x = row_1_x - keyboard_row_side_step;
+    row_3_x = row_2_x - keyboard_row_side_step;
+    row_4_x = row_3_x - keyboard_row_4_left_shift;
+    row_5_x = row_4_x + keyboard_row_side_step;
+    row_6_x = row_5_x + keyboard_row_6_right_shift;
+
+    row_1_y = keyboard_row_front_offset;
+    row_2_y = row_1_y + keyboard_row_depth;
+    row_3_y = row_2_y + keyboard_row_depth;
+    row_4_y = row_3_y + keyboard_row_depth;
+    row_5_y = row_4_y + keyboard_row_depth;
+
+    logo_x =
+        row_6_x
+        + keyboard_row_6_width
+        + logo_bevel_x_gap_from_top_row;
+    logo_y =
+        row_5_y
+        + keyboard_row_depth
+        + logo_bevel_y_gap_from_row_5;
+
+    sloped_rect_recess_cut(
+        logo_x,
+        logo_y,
+        logo_bevel_width,
+        logo_bevel_depth_y,
+        logo_bevel_depth_z
+    );
+}
+
 module vent_cut(y) {
     translate([
         -cut_overlap,
@@ -261,6 +335,7 @@ module top_case() {
 
         side_wall_chamfer_cuts();
         keyboard_cutout();
+        logo_bevel_cut();
         ventilation_cutouts();
     }
 }
