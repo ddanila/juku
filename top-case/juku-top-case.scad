@@ -52,6 +52,17 @@ switch_access_depth_y = 12;
 switch_access_corner_radius = 6;
 switch_access_extra_depth = 12;
 switch_access_segments = 96;
+keyboard_support_outer_diameter = 12;
+keyboard_support_hole_diameter = 5;
+keyboard_support_height = 9;
+// M3 threaded insert pilot depth; tune after selecting the actual insert.
+keyboard_support_hole_depth = 7;
+keyboard_support_overlap = 1;
+keyboard_support_segments = 96;
+keyboard_support_top_row_spacing = [100, 95, 100];
+keyboard_support_bottom_row_spacing = [80, 135, 80];
+keyboard_support_row_spacing_y = 125;
+keyboard_support_top_row_gap_from_keyboard = 10;
 
 slope_start_y = outside_depth - slope_starts_from_back;
 cut_overlap = 0.01;
@@ -115,6 +126,18 @@ assert(2 * switch_access_corner_radius <= switch_access_depth_y);
 assert(switch_access_width >= 2 * switch_access_corner_radius);
 assert(switch_access_extra_depth >= 0);
 assert(switch_access_segments >= 3);
+assert(keyboard_support_outer_diameter > 0);
+assert(keyboard_support_hole_diameter > 0);
+assert(keyboard_support_hole_diameter < keyboard_support_outer_diameter);
+assert(keyboard_support_height > 0);
+assert(keyboard_support_hole_depth > 0);
+assert(keyboard_support_hole_depth < keyboard_support_height);
+assert(keyboard_support_overlap >= 0);
+assert(keyboard_support_segments >= 3);
+assert(len(keyboard_support_top_row_spacing) == 3);
+assert(len(keyboard_support_bottom_row_spacing) == 3);
+assert(keyboard_support_row_spacing_y > 0);
+assert(keyboard_support_top_row_gap_from_keyboard > 0);
 assert(
     switch_access_x_offset_from_logo + switch_access_width
     <= logo_bevel_width
@@ -177,6 +200,25 @@ function front_side_reinforcement_y() =
 function rear_vent_reinforcement_bottom_z() =
     inner_top_height_at(rear_vent_rear_reinforcement_y())
     - vent_reinforcement_top_height;
+function row_width(spacing) = spacing[0] + spacing[1] + spacing[2];
+function support_row_x_positions(spacing) =
+    let(
+        x0 = (outside_width - row_width(spacing)) / 2
+    )
+        [
+            x0,
+            x0 + spacing[0],
+            x0 + spacing[0] + spacing[1],
+            x0 + spacing[0] + spacing[1] + spacing[2]
+        ];
+function keyboard_support_top_row_y() =
+    keyboard_row_6_y()
+    + keyboard_row_depth
+    + keyboard_support_top_row_gap_from_keyboard;
+function keyboard_support_bottom_row_y() =
+    keyboard_support_top_row_y() - keyboard_support_row_spacing_y;
+function keyboard_support_slope() =
+    (rear_height - front_height) / slope_start_y;
 function front_edge_slope() = (rear_height - front_height) / slope_start_y;
 function front_edge_round_center_y() = front_edge_round_radius;
 function front_edge_round_center_z() =
@@ -735,6 +777,117 @@ module rear_vent_cross_reinforcements() {
         );
 }
 
+module keyboard_support(x, y) {
+    slope = keyboard_support_slope();
+    support_top_center_z = inner_top_height_at(y);
+    support_bottom_center_z = support_top_center_z - keyboard_support_height;
+    support_radius = keyboard_support_outer_diameter / 2;
+    support_start_z =
+        support_bottom_center_z - slope * support_radius - cut_overlap;
+    support_end_z =
+        support_top_center_z + slope * support_radius
+        + keyboard_support_overlap;
+
+    difference() {
+        intersection() {
+            translate([x, y, support_start_z])
+                cylinder(
+                    h = support_end_z - support_start_z,
+                    d = keyboard_support_outer_diameter,
+                    $fn = keyboard_support_segments
+                );
+
+            polyhedron(
+                points = [
+                    [
+                        x - support_radius - cut_overlap,
+                        y - support_radius - cut_overlap,
+                        support_bottom_center_z
+                            - slope * support_radius
+                            - cut_overlap
+                    ],
+                    [
+                        x + support_radius + cut_overlap,
+                        y - support_radius - cut_overlap,
+                        support_bottom_center_z
+                            - slope * support_radius
+                            - cut_overlap
+                    ],
+                    [
+                        x + support_radius + cut_overlap,
+                        y + support_radius + cut_overlap,
+                        support_bottom_center_z
+                            + slope * support_radius
+                            - cut_overlap
+                    ],
+                    [
+                        x - support_radius - cut_overlap,
+                        y + support_radius + cut_overlap,
+                        support_bottom_center_z
+                            + slope * support_radius
+                            - cut_overlap
+                    ],
+
+                    [
+                        x - support_radius - cut_overlap,
+                        y - support_radius - cut_overlap,
+                        support_top_center_z
+                            - slope * support_radius
+                            + keyboard_support_overlap
+                    ],
+                    [
+                        x + support_radius + cut_overlap,
+                        y - support_radius - cut_overlap,
+                        support_top_center_z
+                            - slope * support_radius
+                            + keyboard_support_overlap
+                    ],
+                    [
+                        x + support_radius + cut_overlap,
+                        y + support_radius + cut_overlap,
+                        support_top_center_z
+                            + slope * support_radius
+                            + keyboard_support_overlap
+                    ],
+                    [
+                        x - support_radius - cut_overlap,
+                        y + support_radius + cut_overlap,
+                        support_top_center_z
+                            + slope * support_radius
+                            + keyboard_support_overlap
+                    ]
+                ],
+                faces = [
+                    [0, 1, 2, 3],
+                    [4, 7, 6, 5],
+                    [0, 4, 5, 1],
+                    [1, 5, 6, 2],
+                    [2, 6, 7, 3],
+                    [3, 7, 4, 0]
+                ]
+            );
+        }
+
+        translate([x, y, support_start_z - cut_overlap])
+            cylinder(
+                h =
+                    keyboard_support_hole_depth
+                    + 2 * slope * support_radius
+                    + 2 * cut_overlap,
+                d = keyboard_support_hole_diameter,
+                $fn = keyboard_support_segments
+            );
+    }
+}
+
+module keyboard_supports() {
+    for (x = support_row_x_positions(keyboard_support_top_row_spacing))
+        keyboard_support(x, keyboard_support_top_row_y());
+
+    for (x = support_row_x_positions(keyboard_support_bottom_row_spacing))
+        keyboard_support(x, keyboard_support_bottom_row_y());
+}
+
 module top_case() {
     difference() {
         union() {
@@ -747,6 +900,7 @@ module top_case() {
             front_side_reinforcements();
             rear_side_reinforcements();
             rear_vent_cross_reinforcements();
+            keyboard_supports();
         }
 
         front_edge_round_cut();
