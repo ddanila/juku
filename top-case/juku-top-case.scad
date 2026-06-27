@@ -21,6 +21,10 @@ side_wall_chamfer_z_overlap = 1;
 vent_cut_count = 4;
 vent_cut_width = 2;
 vent_cut_gap = 3;
+side_vent_count = 8;
+side_vent_y_gap_from_rear_vents = 22;
+side_vent_top_length = 10;
+side_vent_side_depth_z = 30;
 logo_bevel_width = 79;
 logo_bevel_depth_y = 15;
 logo_bevel_depth_z = 1;
@@ -62,6 +66,11 @@ assert(side_wall_chamfer_z_overlap >= 0);
 assert(vent_cut_count > 0);
 assert(vent_cut_width > 0);
 assert(vent_cut_gap > 0);
+assert(side_vent_count > 0);
+assert(side_vent_y_gap_from_rear_vents > 0);
+assert(side_vent_top_length > wall_thickness);
+assert(side_vent_side_depth_z > wall_thickness);
+assert(side_vent_side_depth_z < rear_height);
 assert(logo_bevel_width > 0);
 assert(logo_bevel_depth_y > 0);
 assert(logo_bevel_depth_z > 0);
@@ -92,6 +101,15 @@ assert(
     slope_start_y
     + vent_cut_count * vent_cut_width
     + (vent_cut_count - 1) * vent_cut_gap
+    < outside_depth - wall_thickness
+);
+assert(
+    slope_start_y
+    + vent_cut_count * vent_cut_width
+    + (vent_cut_count - 1) * vent_cut_gap
+    + side_vent_y_gap_from_rear_vents
+    + side_vent_count * vent_cut_width
+    + (side_vent_count - 1) * vent_cut_gap
     < outside_depth - wall_thickness
 );
 
@@ -418,6 +436,52 @@ module ventilation_cutouts() {
         );
 }
 
+module left_side_vent_cut(y) {
+    top_z = top_height_at(y);
+
+    translate([
+        -cut_overlap,
+        y,
+        top_z - side_vent_side_depth_z
+    ])
+        cube([
+            wall_thickness + 2 * cut_overlap,
+            vent_cut_width,
+            side_vent_side_depth_z + cut_overlap
+        ]);
+
+    translate([
+        -cut_overlap,
+        y,
+        inner_top_height_at(y) - cut_overlap
+    ])
+        cube([
+            side_vent_top_length + cut_overlap,
+            vent_cut_width,
+            wall_thickness + 2 * cut_overlap
+        ]);
+}
+
+module right_side_vent_cut(y) {
+    translate([outside_width, 0, 0])
+        mirror([1, 0, 0])
+            left_side_vent_cut(y);
+}
+
+module side_ventilation_cutouts() {
+    for (i = [0 : side_vent_count - 1]) {
+        y =
+            slope_start_y
+            + vent_cut_count * vent_cut_width
+            + (vent_cut_count - 1) * vent_cut_gap
+            + side_vent_y_gap_from_rear_vents
+            + i * (vent_cut_width + vent_cut_gap);
+
+        left_side_vent_cut(y);
+        right_side_vent_cut(y);
+    }
+}
+
 module top_case() {
     difference() {
         union() {
@@ -434,6 +498,7 @@ module top_case() {
         led_hole_cut();
         switch_access_cut();
         ventilation_cutouts();
+        side_ventilation_cutouts();
     }
 }
 
