@@ -25,6 +25,8 @@ side_vent_count = 8;
 side_vent_y_gap_from_rear_vents = 22;
 side_vent_top_length = 10;
 side_vent_side_depth_z = 30;
+front_edge_round_radius = 1;
+front_edge_round_segments = 12;
 logo_bevel_width = 79;
 logo_bevel_depth_y = 15;
 logo_bevel_depth_z = 1;
@@ -71,6 +73,9 @@ assert(side_vent_y_gap_from_rear_vents > 0);
 assert(side_vent_top_length > wall_thickness);
 assert(side_vent_side_depth_z > wall_thickness);
 assert(side_vent_side_depth_z < rear_height);
+assert(front_edge_round_radius > 0);
+assert(front_edge_round_radius < front_height);
+assert(front_edge_round_segments >= 3);
 assert(logo_bevel_width > 0);
 assert(logo_bevel_depth_y > 0);
 assert(logo_bevel_depth_z > 0);
@@ -120,6 +125,50 @@ function top_height_at(y) =
         : rear_height;
 
 function inner_top_height_at(y) = top_height_at(y) - wall_thickness;
+function front_edge_slope() = (rear_height - front_height) / slope_start_y;
+function front_edge_round_center_y() = front_edge_round_radius;
+function front_edge_round_center_z() =
+    let(
+        m = front_edge_slope(),
+        r = front_edge_round_radius
+    )
+        front_height + m * r - r * sqrt(m * m + 1);
+function front_edge_round_top_y() =
+    let(
+        m = front_edge_slope(),
+        r = front_edge_round_radius,
+        cz = front_edge_round_center_z(),
+        n = m * r - cz + front_height
+    )
+        r - m * n / (m * m + 1);
+function front_edge_round_top_z() =
+    let(
+        m = front_edge_slope(),
+        r = front_edge_round_radius,
+        cz = front_edge_round_center_z(),
+        n = m * r - cz + front_height
+    )
+        cz + n / (m * m + 1);
+function front_edge_round_top_angle() =
+    atan2(
+        front_edge_round_top_z() - front_edge_round_center_z(),
+        front_edge_round_top_y() - front_edge_round_center_y()
+    );
+function front_edge_round_points() = [
+    for (i = [0 : front_edge_round_segments])
+        let(
+            a =
+                front_edge_round_top_angle()
+                + (180 - front_edge_round_top_angle())
+                    * i / front_edge_round_segments
+        )
+            [
+                front_edge_round_center_y()
+                    + front_edge_round_radius * cos(a),
+                front_edge_round_center_z()
+                    + front_edge_round_radius * sin(a)
+            ]
+];
 
 function keyboard_row_1_x() = keyboard_row_left_offset;
 function keyboard_row_2_x() = keyboard_row_1_x() - keyboard_row_side_step;
@@ -269,6 +318,52 @@ module side_wall_chamfer_cuts() {
         outside_width + cut_overlap,
         outside_width - side_wall_chamfer_width
     );
+}
+
+module front_edge_round_cut() {
+    translate([-cut_overlap, 0, 0])
+        multmatrix([
+            [0, 0, 1, 0],
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 0, 1]
+        ])
+            linear_extrude(height = outside_width + 2 * cut_overlap)
+                polygon(
+                    concat(
+                        [
+                            [
+                                -cut_overlap,
+                                front_edge_round_center_z()
+                                    - cut_overlap
+                            ],
+                            [
+                                -cut_overlap,
+                                front_height + cut_overlap
+                            ],
+                            [
+                                front_edge_round_top_y() + cut_overlap,
+                                top_height_at(front_edge_round_top_y())
+                                    + cut_overlap
+                            ]
+                        ],
+                        [
+                            for (
+                                i = [
+                                    0 : len(front_edge_round_points()) - 1
+                                ]
+                            )
+                                front_edge_round_points()[i]
+                        ],
+                        [
+                            [
+                                -cut_overlap,
+                                front_edge_round_center_z()
+                                    - cut_overlap
+                            ]
+                        ]
+                    )
+                );
 }
 
 module keyboard_row_cut(x, y, width) {
@@ -492,6 +587,7 @@ module top_case() {
             side_top_chamfers();
         }
 
+        front_edge_round_cut();
         side_wall_chamfer_cuts();
         keyboard_cutout();
         logo_bevel_cut();
