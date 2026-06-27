@@ -32,6 +32,7 @@ vent_reinforcement_z_overlap = 1;
 vent_cross_reinforcement_count = 5;
 vent_cross_reinforcement_spacing = 60;
 vent_cross_reinforcement_width = 2;
+rear_side_reinforcement_y_gap = 83;
 front_edge_round_radius = 1;
 front_edge_round_segments = 12;
 logo_bevel_width = 79;
@@ -87,6 +88,7 @@ assert(vent_reinforcement_z_overlap >= 0);
 assert(vent_cross_reinforcement_count == 5);
 assert(vent_cross_reinforcement_spacing > 0);
 assert(vent_cross_reinforcement_width > 0);
+assert(rear_side_reinforcement_y_gap > 0);
 assert(front_edge_round_radius > 0);
 assert(front_edge_round_radius < front_height);
 assert(front_edge_round_segments >= 3);
@@ -128,6 +130,10 @@ assert(
     < outside_depth - wall_thickness
 );
 assert(
+    rear_side_reinforcement_y() + vent_reinforcement_width
+    < outside_depth - wall_thickness
+);
+assert(
     outside_width / 2 - 2 * vent_cross_reinforcement_spacing
     - vent_cross_reinforcement_width / 2
     > wall_thickness
@@ -161,6 +167,8 @@ function rear_vent_front_reinforcement_y() =
     slope_start_y - vent_reinforcement_width;
 function rear_vent_rear_reinforcement_y() =
     slope_start_y + rear_vent_group_depth_y();
+function rear_side_reinforcement_y() =
+    rear_vent_rear_reinforcement_y() + rear_side_reinforcement_y_gap;
 function rear_vent_reinforcement_bottom_z() =
     inner_top_height_at(rear_vent_rear_reinforcement_y())
     - vent_reinforcement_top_height;
@@ -659,6 +667,36 @@ module rear_vent_reinforcements() {
     rear_vent_reinforcement(rear_vent_rear_reinforcement_y());
 }
 
+module side_wall_reinforcement_pair(y) {
+    top_z = inner_top_height_at(y);
+
+    translate([
+        wall_thickness,
+        y,
+        0
+    ])
+        cube([
+            vent_reinforcement_side_depth_x,
+            vent_reinforcement_width,
+            top_z
+        ]);
+
+    translate([
+        outside_width - wall_thickness - vent_reinforcement_side_depth_x,
+        y,
+        0
+    ])
+        cube([
+            vent_reinforcement_side_depth_x,
+            vent_reinforcement_width,
+            top_z
+        ]);
+}
+
+module rear_side_reinforcements() {
+    side_wall_reinforcement_pair(rear_side_reinforcement_y());
+}
+
 module rear_vent_cross_reinforcement(x) {
     y = rear_vent_front_reinforcement_y();
     depth_y =
@@ -696,6 +734,7 @@ module top_case() {
             side_wall(outside_width - wall_thickness);
             side_top_chamfers();
             rear_vent_reinforcements();
+            rear_side_reinforcements();
             rear_vent_cross_reinforcements();
         }
 
