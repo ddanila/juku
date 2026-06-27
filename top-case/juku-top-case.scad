@@ -25,6 +25,10 @@ side_vent_count = 8;
 side_vent_y_gap_from_rear_vents = 22;
 side_vent_top_length = 10;
 side_vent_side_depth_z = 30;
+vent_reinforcement_width = 3;
+vent_reinforcement_top_height = 4;
+vent_reinforcement_side_depth_x = 7;
+vent_reinforcement_z_overlap = 1;
 front_edge_round_radius = 1;
 front_edge_round_segments = 12;
 logo_bevel_width = 79;
@@ -73,6 +77,10 @@ assert(side_vent_y_gap_from_rear_vents > 0);
 assert(side_vent_top_length > wall_thickness);
 assert(side_vent_side_depth_z > wall_thickness);
 assert(side_vent_side_depth_z < rear_height);
+assert(vent_reinforcement_width > 0);
+assert(vent_reinforcement_top_height > 0);
+assert(vent_reinforcement_side_depth_x > wall_thickness);
+assert(vent_reinforcement_z_overlap >= 0);
 assert(front_edge_round_radius > 0);
 assert(front_edge_round_radius < front_height);
 assert(front_edge_round_segments >= 3);
@@ -108,6 +116,11 @@ assert(
     + (vent_cut_count - 1) * vent_cut_gap
     < outside_depth - wall_thickness
 );
+assert(rear_vent_front_reinforcement_y() > wall_thickness);
+assert(
+    rear_vent_rear_reinforcement_y() + vent_reinforcement_width
+    < outside_depth - wall_thickness
+);
 assert(
     slope_start_y
     + vent_cut_count * vent_cut_width
@@ -125,6 +138,13 @@ function top_height_at(y) =
         : rear_height;
 
 function inner_top_height_at(y) = top_height_at(y) - wall_thickness;
+function rear_vent_group_depth_y() =
+    vent_cut_count * vent_cut_width
+    + (vent_cut_count - 1) * vent_cut_gap;
+function rear_vent_front_reinforcement_y() =
+    slope_start_y - vent_reinforcement_width;
+function rear_vent_rear_reinforcement_y() =
+    slope_start_y + rear_vent_group_depth_y();
 function front_edge_slope() = (rear_height - front_height) / slope_start_y;
 function front_edge_round_center_y() = front_edge_round_radius;
 function front_edge_round_center_z() =
@@ -577,6 +597,48 @@ module side_ventilation_cutouts() {
     }
 }
 
+module rear_vent_reinforcement(y) {
+    top_z = inner_top_height_at(y);
+
+    translate([
+        wall_thickness,
+        y,
+        top_z - vent_reinforcement_top_height
+    ])
+        cube([
+            outside_width - 2 * wall_thickness,
+            vent_reinforcement_width,
+            vent_reinforcement_top_height + vent_reinforcement_z_overlap
+        ]);
+
+    translate([
+        wall_thickness,
+        y,
+        0
+    ])
+        cube([
+            vent_reinforcement_side_depth_x,
+            vent_reinforcement_width,
+            top_z
+        ]);
+
+    translate([
+        outside_width - wall_thickness - vent_reinforcement_side_depth_x,
+        y,
+        0
+    ])
+        cube([
+            vent_reinforcement_side_depth_x,
+            vent_reinforcement_width,
+            top_z
+        ]);
+}
+
+module rear_vent_reinforcements() {
+    rear_vent_reinforcement(rear_vent_front_reinforcement_y());
+    rear_vent_reinforcement(rear_vent_rear_reinforcement_y());
+}
+
 module top_case() {
     difference() {
         union() {
@@ -585,6 +647,7 @@ module top_case() {
             side_wall(0);
             side_wall(outside_width - wall_thickness);
             side_top_chamfers();
+            rear_vent_reinforcements();
         }
 
         front_edge_round_cut();
