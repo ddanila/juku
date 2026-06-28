@@ -63,6 +63,7 @@ keyboard_support_top_row_spacing = [100, 95, 100];
 keyboard_support_bottom_row_spacing = [80, 135, 80];
 keyboard_support_row_spacing_y = 125;
 keyboard_support_top_row_gap_from_keyboard = 10;
+keyboard_support_x_offset = -1.5;
 
 slope_start_y = outside_depth - slope_starts_from_back;
 cut_overlap = 0.01;
@@ -204,6 +205,7 @@ function row_width(spacing) = spacing[0] + spacing[1] + spacing[2];
 function support_row_x_positions(spacing) =
     let(
         x0 = (outside_width - row_width(spacing)) / 2
+            + keyboard_support_x_offset
     )
         [
             x0,
