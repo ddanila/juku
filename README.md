@@ -36,6 +36,19 @@ leg mounting holes, and reinforced PCB support mounts.
 - Source: [`bottom-case/juku-bottom-case.scad`](bottom-case/juku-bottom-case.scad)
 - Printable model: [`bottom-case/juku-bottom-case.stl`](bottom-case/juku-bottom-case.stl)
 
+### Top Case
+
+The top case is an open-bottom shell with a sloped keyboard face, keyboard
+opening, side-wall chamfers, rear ventilation slots, a recessed logo area,
+LED opening, and switch access opening.
+
+| Exterior |
+| --- |
+| ![Top case render](top-case/preview.png) |
+
+- Source: [`top-case/juku-top-case.scad`](top-case/juku-top-case.scad)
+- Printable model: [`top-case/juku-top-case.stl`](top-case/juku-top-case.stl)
+
 ### Legs
 
 The rubber legs are simple stepped push-in feet matched to the bottom-case
