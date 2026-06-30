@@ -1,18 +1,18 @@
 // Juku keycap
 // Units: millimeters
 
-outside_width = 17.5;
-outside_depth = 17.5;
-height = 11;
+outside_width = 17.0;
+outside_depth = 17.0;
+height = 10;
 top_chamfer_z = 4;
 top_chamfer_xy = 3;
-wall_thickness = 1;
+wall_thickness = 0.80;
 top_thickness = 3;
 chamfer_steps = 128;
-top_dish_radius = 100;
+top_dish_radius = 75;
 top_dish_depth = 1;
 top_dish_z_offset = 0.5;
-top_dish_segments = 1024;
+top_dish_segments = 2048;
 spring_rod_diameter = 2.25;
 spring_rod_length = 2;
 spring_rod_end_chamfer = 0.5;
@@ -23,8 +23,8 @@ spring_rod_base_xy_chamfer = 1;
 contact_pusher_diameter = 2.5;
 contact_pusher_edge_spacing = 5;
 contact_pusher_wall_overlap = 0.05;
-latch_width = 7.5;
-latch_thickness = 1;
+latch_width = 7;
+latch_thickness = wall_thickness;
 latch_length = 2;
 latch_tooth_depth = 0.6;
 latch_tooth_height = 1.2;
