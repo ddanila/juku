@@ -42,9 +42,9 @@ The top case is an open-bottom shell with a sloped keyboard face, keyboard
 opening, side-wall chamfers, rear ventilation slots, a recessed logo area,
 LED opening, and switch access opening.
 
-| Exterior |
-| --- |
-| ![Top case render](top-case/preview.png) |
+| Exterior | Interior |
+| --- | --- |
+| ![Top case exterior render](top-case/preview.png) | ![Top case interior render](top-case/preview-bottom.png) |
 
 - Source: [`top-case/juku-top-case.scad`](top-case/juku-top-case.scad)
 - Printable model: [`top-case/juku-top-case.stl`](top-case/juku-top-case.stl)
@@ -53,6 +53,10 @@ LED opening, and switch access opening.
 
 The rubber legs are simple stepped push-in feet matched to the bottom-case
 mounting holes.
+
+| Render |
+| --- |
+| ![Leg render](legs/preview.png) |
 
 - Source: [`legs/juku-leg.scad`](legs/juku-leg.scad)
 - Printable/reference model: [`legs/juku-leg.stl`](legs/juku-leg.stl)

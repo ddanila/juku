@@ -33,7 +33,7 @@ module juku_leg_fit_check() {
 module juku_leg() {
     juku_leg_fit_check();
 
-    color([0.04, 0.04, 0.04])
+    color([0.16, 0.16, 0.16])
         union() {
             translate([0, 0, -leg_outer_height])
                 cylinder(

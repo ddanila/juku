@@ -71,6 +71,18 @@ render \
     0,0,0,55,0,25,180 \
     3200 2400
 
+render \
+    "$repo_root/top-case/juku-top-case.scad" \
+    "$repo_root/top-case/preview-bottom.png" \
+    0,0,0,235,0,205,180 \
+    3200 2400
+
+render \
+    "$repo_root/legs/juku-leg.scad" \
+    "$repo_root/legs/preview.png" \
+    0,0,0,55,0,25,50 \
+    3200 2400
+
 # Zoomed underside detail of the recessed logo and serial plate.
 render_zoom \
     "$repo_root/bottom-case/juku-bottom-case.scad" \
