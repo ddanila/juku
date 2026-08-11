@@ -93,7 +93,7 @@ All dimensions are in millimeters.
 | PCB support through-hole | 3.5 diameter |
 | PCB support exterior nut pocket | Hexagonal, 6 across flats x 3 deep |
 | PCB support interior reinforcement | 12 diameter x 3 high |
-| PCB support rear row centers | X: 25, 128, 231, 315; Y: 272 |
+| PCB support rear row centers | X: 25, 129, 233, 315; Y: 272 |
 | PCB support side centers | X: 25, 315; Y: 152 |
 | PCB support front row centers | X: 25, 120, 215, 315; Y: 32 |
 | Lid mount side centers | X: 7, 333; Y: 25, 265 |

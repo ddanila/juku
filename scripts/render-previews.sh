@@ -99,7 +99,7 @@ render_zoom \
     3200 2400
 
 # 4-part split previews (see bottom-case/SPLITTING.md). Like render(), but with
-# a split_part override so each quadrant - and the exploded overview - is framed
+# a split_part override so each panel - and the exploded overview - is framed
 # from the same isometric angle as the one-piece preview.
 render_split() {
     local out="$1" part="$2"
