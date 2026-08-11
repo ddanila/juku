@@ -99,7 +99,7 @@ All dimensions are in millimeters.
 | Lid mount side centers | X: 7, 333; Y: 25, 265 |
 | Lid mount front center | X: 170; Y: 7 |
 | Lid mount through-hole | 3 diameter |
-| Lid mount exterior recess | 8 wide x 5.5 deep, round-ended and projected to outer edge |
+| Lid mount exterior recess | 8 wide x 6.5 deep, round-ended and projected to outer edge |
 | Lid mount interior reinforcement | 13 diameter x 7 high, clipped to D shape |
 | Logo plaque | 30 wide x 10 deep x 0.6 recessed into underside |
 | Logo plaque front offset | 50 to front edge |
