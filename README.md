@@ -1,5 +1,17 @@
 # Juku models
 
+> **Moved to [ddanila/3d-models — Juku](https://github.com/ddanila/3d-models/tree/main/models/juku).**
+>
+> This repository is archived. All model sources, STL files, reference/print
+> photos, notes and scripts now live in the collection above. Make future changes
+> and report issues in **3d-models**; this repository retains the original history.
+>
+> [Keycap](https://github.com/ddanila/3d-models/tree/main/models/juku/keycap) ·
+> [Bottom case](https://github.com/ddanila/3d-models/tree/main/models/juku/bottom-case) ·
+> [Top case](https://github.com/ddanila/3d-models/tree/main/models/juku/top-case) ·
+> [Legs](https://github.com/ddanila/3d-models/tree/main/models/juku/legs) ·
+> [Physical print verification](https://github.com/ddanila/3d-models/blob/main/MODEL-STATUS.md)
+
 OpenSCAD models for restoring and reproducing parts of the Juku computer.
 Technical dimensions and modeling details are in [NOTES.md](NOTES.md).
 
